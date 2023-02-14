@@ -71,16 +71,13 @@ const Status = () => {
   ];
 
   return (
-    <div className="flex items-center space-x-4">
-      <p className="text-base font-medium text-dark-500 dark:text-light-500">
-        Status:
-      </p>
+    <div className="flex items-center md:space-x-4">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
             size="sm"
-            className="w-[180px] justify-start shadow-md"
+            className="w-[200px] justify-start shadow-md"
           >
             {selectedStatus ? (
               <>
@@ -89,7 +86,7 @@ const Status = () => {
               </>
             ) : (
               <>
-                <PlusCircle className="mr-2 h-5 w-5" /> Definir status
+                <PlusCircle className="mr-2 h-5 w-5" /> Set status
               </>
             )}
           </Button>
@@ -116,7 +113,7 @@ const Status = () => {
                         "mr-2 h-4 w-4",
                         status.value === selectedStatus?.value
                           ? "opacity-100"
-                          : "opacity-40"
+                          : "opacity-50"
                       )}
                     />
                     <span>{status.label}</span>

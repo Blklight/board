@@ -79,16 +79,13 @@ const Priority = () => {
   ];
 
   return (
-    <div className="flex items-center space-x-4">
-      <p className="text-base font-medium text-dark-500 dark:text-light-500">
-        Prioridade:
-      </p>
+    <div className="flex items-center md:space-x-4">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
             size="sm"
-            className="w-[180px] justify-start shadow-md"
+            className="w-[200px] justify-start shadow-md"
           >
             {selectedPriority ? (
               <>
@@ -97,14 +94,14 @@ const Priority = () => {
               </>
             ) : (
               <>
-                <Signal className="mr-2 h-6 w-6" /> Definir prioridade
+                <Signal className="mr-2 h-6 w-6" /> Set priority
               </>
             )}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="p-0" side="right" align="start">
           <Command>
-            <CommandInput placeholder="Change status..." />
+            <CommandInput placeholder="Change priority..." />
             <CommandList>
               <CommandEmpty>No results found.</CommandEmpty>
               <CommandGroup>
@@ -125,7 +122,7 @@ const Priority = () => {
                         "mr-2 h-6 w-6",
                         priority.value === selectedPriority?.value
                           ? "opacity-100"
-                          : "opacity-40"
+                          : "opacity-50"
                       )}
                     />
                     <span>{priority.label}</span>

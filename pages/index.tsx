@@ -195,10 +195,8 @@ const Home = () => {
           </div>
           <Tabs defaultValue="account" className="w-full">
             <TabsList>
-              <TabsTrigger value="account">Projetos</TabsTrigger>
-              <TabsTrigger value="password">
-                Estatisticas dos projetos
-              </TabsTrigger>
+              <TabsTrigger value="account">Projects</TabsTrigger>
+              <TabsTrigger value="password">Stats</TabsTrigger>
               <TabsTrigger value="teste">Teste</TabsTrigger>
             </TabsList>
             <TabsContent value="account">
@@ -208,29 +206,32 @@ const Home = () => {
               </p>
 
               <div className="grid w-full items-center gap-1.5">
-                <Label htmlFor="name-project">Nome do projeto:</Label>
+                <Label htmlFor="name-project">Project name:</Label>
                 <Input
                   type="text"
                   id="name-project"
-                  placeholder="Nome do projeto"
+                  placeholder="Project name..."
                   onChange={(e) => {
                     setNameProject(e.target.value);
                   }}
                 />
-                <p className="text-sm text-slate-500">
-                  Insira o nome do projeto
-                </p>
+                <p className="text-sm text-slate-500">Enter project name.</p>
               </div>
               {/* <img src="/images/blklight-thumb.jpg" alt="" /> */}
             </TabsContent>
-            <TabsContent value="password">
+            <TabsContent value="password" className="w-[600px]">
               <div className="flex justify-between items-center mb-4">
-                <h1 className="text-3xl font-bold">Criar board</h1>
-                <div className="">
-                  <span className="ml-auto font-mono font-medium text-base py-2 px-3 bg-white dark:bg-dark-800 text-dark-500 dark:text-light-500 border border-slate-300 dark:border-slate-700 rounded-md shadow-md">
-                    Data: {date}
+                <h1 className="text-3xl font-bold">Create board</h1>
+              </div>
+              <div className="flex flex-col md:flex-row md:flex-wrap md:items-center gap-6 mb-6">
+                <div className="md:mb-0 mb-2">
+                  <span className="flex whitespace-pre font-mono font-medium text-sm py-2 px-3 bg-transparent text-dark-500 dark:text-light-500 border border-slate-300 dark:border-slate-700 rounded-md shadow-md hover:ring-2 hover:ring-gray-300 dark:focus:ring-grey-300">
+                    Time: {date}
                   </span>
                 </div>
+
+                <Status />
+                <Priority />
               </div>
 
               <div className="my-4">
@@ -238,7 +239,8 @@ const Home = () => {
                   <div className="flex items-center px-3 bg-white dark:bg-dark-800 rounded-md shadow-md border border-slate-300 dark:border-slate-700">
                     <Popover open={open} onOpenChange={setOpen}>
                       <PopoverTrigger asChild>
-                        <span className="text-light-500 bg-slate-600 font-mono font-medium tracking-wider leading-normal rounded sm:text-sm py-0.5 px-2 cursor-pointer">
+                        <span className="flex items-center text-light-500 bg-slate-600 font-mono font-medium tracking-wider leading-normal rounded sm:text-sm py-0.5 px-2 cursor-pointer">
+                          <Tags className="mr-2 w-4 h-4" />
                           {label}
                         </span>
                       </PopoverTrigger>
@@ -253,9 +255,7 @@ const Home = () => {
                             autoFocus={true}
                           />
                           <CommandList>
-                            <CommandEmpty>
-                              Nenhuma etiqueta encontrada.
-                            </CommandEmpty>
+                            <CommandEmpty>No label found.</CommandEmpty>
                             <CommandGroup>
                               {labels.map((label) => (
                                 <CommandItem
@@ -279,7 +279,7 @@ const Home = () => {
                       className="w-full p-3 mx-3 focus:outline-none text-dark-500 bg-white dark:text-light-500 dark:bg-dark-800 leading-normal"
                       name=""
                       id=""
-                      placeholder="Título..."
+                      placeholder="Title..."
                       onChange={(e) => {
                         setTitle(e.target.value);
                       }}
@@ -288,17 +288,14 @@ const Home = () => {
                 </div>
 
                 <div className="grid w-full gap-1.5 mb-4">
-                  <Label htmlFor="message">Descrição:</Label>
+                  <Label htmlFor="message">Description:</Label>
                   <Textarea
                     className="shadow-md"
-                    placeholder="Escreva a sua descrição..."
+                    placeholder="Write a description..."
                     id="message"
                   />
                 </div>
-                <div className="flex gap-5">
-                  <Status />
-                  <Priority />
-                </div>
+                <div className="flex gap-5"></div>
               </div>
             </TabsContent>
             <TabsContent value="teste">
