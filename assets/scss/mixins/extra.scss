@@ -1,0 +1,193 @@
+@mixin form-underline-variant($color) {
+  background-image: -webkit-linear-gradient($color, $color),
+    -webkit-linear-gradient(transparent, transparent);
+  background-image: -o-linear-gradient($color, $color),
+    -o-linear-gradient(transparent, transparent);
+  background-image: linear-gradient($color, $color),
+    linear-gradient(transparent, transparent);
+}
+
+@mixin cyber-underline-variant($color) {
+  position: relative;
+  padding-bottom: 12px;
+  &:before {
+    content: "";
+    display: block;
+    position: absolute;
+    bottom: 0px;
+    // left: 2px;
+    left: 0px;
+    width: 100%;
+    height: 10px;
+    background-color: $color;
+    clip-path: polygon(
+      0px 0px,
+      85px 0px,
+      90px 5px,
+      100% 5px,
+      100% 6px,
+      85px 6px,
+      80px 10px,
+      0px 10px
+    );
+  }
+
+  &:after {
+    content: "_";
+    animation-name: hxafter;
+    animation-duration: $glitched-duration;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+  }
+}
+
+@mixin hover-card-variant($name) {
+  // @-webkit-keyframes shadow-pop-bl-#{$name} {
+  //   0% {
+  //     -webkit-box-shadow: 0 0 $color, 0 0 $color, 0 0 $color, 0 0 $color,
+  //       0 0 $color, 0 0 $color, 0 0 $color, 0 0 $color;
+  //     box-shadow: 0 0 $color, 0 0 $color, 0 0 $color, 0 0 $color, 0 0 $color,
+  //       0 0 $color, 0 0 $color, 0 0 $color;
+  //     -webkit-transform: translateX(0) translateY(0);
+  //     transform: translateX(0) translateY(0);
+  //   }
+  //   100% {
+  //     -webkit-box-shadow: -1px 1px $color, -2px 2px $color, -3px 3px $color,
+  //       -4px 4px $color, -5px 5px $color, -6px 6px $color, -7px 7px $color,
+  //       -8px 8px $color;
+  //     box-shadow: -1px 1px $color, -2px 2px $color, -3px 3px $color,
+  //       -4px 4px $color, -5px 5px $color, -6px 6px $color, -7px 7px $color,
+  //       -8px 8px $color;
+  //     -webkit-transform: translateX(8px) translateY(-8px);
+  //     transform: translateX(8px) translateY(-8px);
+  //   }
+  // }
+  // @keyframes shadow-pop-bl-#{$name} {
+  //   0% {
+  //     -webkit-box-shadow: 0 0 $color, 0 0 $color, 0 0 $color, 0 0 $color,
+  //       0 0 $color, 0 0 $color, 0 0 $color, 0 0 $color;
+  //     box-shadow: 0 0 $color, 0 0 $color, 0 0 $color, 0 0 $color, 0 0 $color,
+  //       0 0 $color, 0 0 $color, 0 0 $color;
+  //     -webkit-transform: translateX(0) translateY(0);
+  //     transform: translateX(0) translateY(0);
+  //   }
+  //   100% {
+  //     -webkit-box-shadow: -1px 1px $color, -2px 2px $color, -3px 3px $color,
+  //       -4px 4px $color, -5px 5px $color, -6px 6px $color, -7px 7px $color,
+  //       -8px 8px $color;
+  //     box-shadow: -1px 1px $color, -2px 2px $color, -3px 3px $color,
+  //       -4px 4px $color, -5px 5px $color, -6px 6px $color, -7px 7px $color,
+  //       -8px 8px $color;
+  //     -webkit-transform: translateX(8px) translateY(-8px);
+  //     transform: translateX(8px) translateY(-8px);
+  //   }
+  // }
+  &:hover {
+    -webkit-animation: shadow-pop-bl-#{$name} 0.2s cubic-bezier(
+        0.47,
+        0,
+        0.745,
+        0.715
+      ) both;
+    animation: shadow-pop-bl-#{$name} 0.2s cubic-bezier(0.47, 0, 0.745, 0.715) both;
+    // border-radius: 0 !important;
+  }
+}
+
+@mixin hover-card-bordered-variant($name, $color) {
+  // @-webkit-keyframes shadow-pop-bl {
+  //   0% {
+  //     -webkit-box-shadow: 0 0 $color, 0 0 $color, 0 0 $color, 0 0 $color,
+  //       0 0 $color, 0 0 $color, 0 0 $color, 0 0 $color;
+  //     box-shadow: 0 0 $color, 0 0 $color, 0 0 $color, 0 0 $color, 0 0 $color,
+  //       0 0 $color, 0 0 $color, 0 0 $color;
+  //     -webkit-transform: translateX(0) translateY(0);
+  //     transform: translateX(0) translateY(0);
+  //   }
+  //   100% {
+  //     -webkit-box-shadow: -1px 1px $color, -2px 2px $color, -3px 3px $color,
+  //       -4px 4px $color, -5px 5px $color, -6px 6px $color, -7px 7px $color,
+  //       -8px 8px $color;
+  //     box-shadow: -1px 1px $color, -2px 2px $color, -3px 3px $color,
+  //       -4px 4px $color, -5px 5px $color, -6px 6px $color, -7px 7px $color,
+  //       -8px 8px $color;
+  //     -webkit-transform: translateX(8px) translateY(-8px);
+  //     transform: translateX(8px) translateY(-8px);
+  //   }
+  // }
+  // @keyframes shadow-pop-bl {
+  //   0% {
+  //     -webkit-box-shadow: 0 0 $color, 0 0 $color, 0 0 $color, 0 0 $color,
+  //       0 0 $color, 0 0 $color, 0 0 $color, 0 0 $color;
+  //     box-shadow: 0 0 $color, 0 0 $color, 0 0 $color, 0 0 $color, 0 0 $color,
+  //       0 0 $color, 0 0 $color, 0 0 $color;
+  //     -webkit-transform: translateX(0) translateY(0);
+  //     transform: translateX(0) translateY(0);
+  //   }
+  //   100% {
+  //     -webkit-box-shadow: -1px 1px $color, -2px 2px $color, -3px 3px $color,
+  //       -4px 4px $color, -5px 5px $color, -6px 6px $color, -7px 7px $color,
+  //       -8px 8px $color;
+  //     box-shadow: -1px 1px $color, -2px 2px $color, -3px 3px $color,
+  //       -4px 4px $color, -5px 5px $color, -6px 6px $color, -7px 7px $color,
+  //       -8px 8px $color;
+  //     -webkit-transform: translateX(8px) translateY(-8px);
+  //     transform: translateX(8px) translateY(-8px);
+  //   }
+  // }
+  &:hover {
+    -webkit-animation: shadow-pop-bl-#{$name} 0.2s cubic-bezier(
+        0.47,
+        0,
+        0.745,
+        0.715
+      ) both;
+    animation: shadow-pop-bl-#{$name} 0.2s cubic-bezier(0.47, 0, 0.745, 0.715) both;
+    border: 1px solid $color !important;
+    // border-radius: 0 !important;
+  }
+}
+
+@mixin shadow-pop-bl($name, $color) {
+  @keyframes shadow-pop-bl-#{$name} {
+    0% {
+      -webkit-box-shadow: 0 0 $color, 0 0 $color, 0 0 $color, 0 0 $color,
+        0 0 $color, 0 0 $color, 0 0 $color, 0 0 $color;
+      box-shadow: 0 0 $color, 0 0 $color, 0 0 $color, 0 0 $color, 0 0 $color,
+        0 0 $color, 0 0 $color, 0 0 $color;
+      -webkit-transform: translateX(0) translateY(0);
+      transform: translateX(0) translateY(0);
+    }
+    100% {
+      -webkit-box-shadow: -1px 1px $color, -2px 2px $color, -3px 3px $color,
+        -4px 4px $color, -5px 5px $color, -6px 6px $color, -7px 7px $color,
+        -8px 8px $color;
+      box-shadow: -1px 1px $color, -2px 2px $color, -3px 3px $color,
+        -4px 4px $color, -5px 5px $color, -6px 6px $color, -7px 7px $color,
+        -8px 8px $color;
+      -webkit-transform: translateX(8px) translateY(-8px);
+      transform: translateX(8px) translateY(-8px);
+    }
+  }
+
+  @keyframes shadow-pop-bl-#{$name} {
+    0% {
+      -webkit-box-shadow: 0 0 $color, 0 0 $color, 0 0 $color, 0 0 $color,
+        0 0 $color, 0 0 $color, 0 0 $color, 0 0 $color;
+      box-shadow: 0 0 $color, 0 0 $color, 0 0 $color, 0 0 $color, 0 0 $color,
+        0 0 $color, 0 0 $color, 0 0 $color;
+      -webkit-transform: translateX(0) translateY(0);
+      transform: translateX(0) translateY(0);
+    }
+    100% {
+      -webkit-box-shadow: -1px 1px $color, -2px 2px $color, -3px 3px $color,
+        -4px 4px $color, -5px 5px $color, -6px 6px $color, -7px 7px $color,
+        -8px 8px $color;
+      box-shadow: -1px 1px $color, -2px 2px $color, -3px 3px $color,
+        -4px 4px $color, -5px 5px $color, -6px 6px $color, -7px 7px $color,
+        -8px 8px $color;
+      -webkit-transform: translateX(8px) translateY(-8px);
+      transform: translateX(8px) translateY(-8px);
+    }
+  }
+}

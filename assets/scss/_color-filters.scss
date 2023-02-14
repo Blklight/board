@@ -1,0 +1,175 @@
+@layer utilities {
+  .filter {
+    &-blue-red-golden {
+      transition: 1s filter linear;
+      filter: url("#blue-red-golden");
+    }
+
+    &-burn {
+      transition: 1s filter linear;
+      filter: url("#burn");
+    }
+
+    &-cyberpunk-v {
+      transition: 1s filter linear;
+      filter: url("#cyberpunk-v");
+    }
+
+    &-cyberpunk-vi {
+      transition: 1s filter linear;
+      filter: url("#cyberpunk-vi");
+    }
+
+    &-cyberpunk-vii {
+      transition: 1s filter linear;
+      filter: url("#cyberpunk-vii");
+    }
+
+    &-cyberpunk-viii {
+      transition: 1s filter linear;
+      filter: url("#cyberpunk-viii");
+    }
+
+    &-cyberpunk-ix {
+      transition: 1s filter linear;
+      filter: url("#cyberpunk-ix");
+    }
+
+    &-dark-red {
+      transition: 1s filter linear;
+      filter: url("#dark-red");
+    }
+
+    &-dark-red {
+      transition: 1s filter linear;
+      filter: url("#dark-red");
+    }
+
+    &-dunastone {
+      transition: 1s filter linear;
+      filter: url("#dunastone");
+    }
+
+    &-icecream {
+      transition: 1s filter linear;
+      filter: url("#icecream");
+    }
+
+    &-icecream-plus {
+      transition: 1s filter linear;
+      filter: url("#icecream-plus");
+    }
+
+    &-linear-burn {
+      transition: 1s filter linear;
+      filter: url("#linear-burn");
+    }
+
+    &-neon-lights {
+      transition: 1s filter linear;
+      filter: url("#neon-lights");
+    }
+
+    &-pink-blue {
+      transition: 1s filter linear;
+      filter: url("#pink-blue");
+    }
+
+    &-purple-red-orange {
+      transition: 1s filter linear;
+      filter: url("#purple-red-orange");
+    }
+
+    &-tester {
+      transition: 1s filter linear;
+      filter: url("#tester");
+    }
+  }
+
+  .hover-card,
+  .hover-button,
+  .hover-header,
+  .hover-author {
+    .filter {
+      &-blue-red-golden {
+        transition: 1s filter linear;
+        filter: none;
+      }
+
+      &-burn {
+        transition: 1s filter linear;
+        filter: none;
+      }
+
+      &-cyberpunk-v {
+        transition: 1s filter linear;
+        filter: none;
+      }
+
+      &-cyberpunk-vi {
+        transition: 1s filter linear;
+        filter: none;
+      }
+
+      &-cyberpunk-vii {
+        transition: 1s filter linear;
+        filter: none;
+      }
+
+      &-cyberpunk-viii {
+        transition: 1s filter linear;
+        filter: none;
+      }
+
+      &-cyberpunk-ix {
+        transition: 1s filter linear;
+        filter: none;
+      }
+
+      &-dark-red {
+        transition: 1s filter linear;
+        filter: none;
+      }
+
+      &-dark-red {
+        transition: 1s filter linear;
+        filter: none;
+      }
+
+      &-dunastone {
+        transition: 1s filter linear;
+        filter: none;
+      }
+
+      &-icecream {
+        transition: 1s filter linear;
+        filter: none;
+      }
+
+      &-icecream-plus {
+        transition: 1s filter linear;
+        filter: none;
+      }
+
+      &-linear-burn {
+        transition: 1s filter linear;
+        filter: none;
+      }
+
+      &-neon-lights {
+        transition: 1s filter linear;
+        filter: none;
+      }
+
+      &-pink-blue {
+        transition: 1s filter linear;
+        filter: none;
+      }
+
+      &-purple-red-orange {
+        transition: 1s filter linear;
+        filter: none;
+      }
+    }
+  }
+}

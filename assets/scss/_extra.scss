@@ -1,0 +1,40 @@
+.skills-header {
+  background: rgb(23, 121, 255);
+  background: linear-gradient(
+    90deg,
+    rgba(23, 121, 255, 1) 0%,
+    rgba(72, 11, 255, 1) 100%
+  );
+}
+
+.marker-line {
+  display: inline;
+  float: none;
+  padding: 0 0.5rem 0.25rem;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+@layer utilities {
+  @include shadow-pop-bl("neon-yellow", theme("colors.neon-yellow.500"));
+  @include shadow-pop-bl("uv", theme("colors.uv.500"));
+
+  .hover-card-neon-yellow {
+    @include hover-card-variant("neon-yellow");
+  }
+
+  .hover-card-bordered-neon-yellow {
+    @include hover-card-bordered-variant(
+      "neon-yellow",
+      theme("colors.neon-yellow.500")
+    );
+  }
+
+  .hover-card-uv {
+    @include hover-card-variant("uv");
+  }
+
+  .hover-card-bordered-uv {
+    @include hover-card-bordered-variant("uv", theme("colors.uv.500"));
+  }
+}
