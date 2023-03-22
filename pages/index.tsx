@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import Head from "next/head";
 import Image from "next/image";
@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import Status from "@/components/Status";
 import Priority from "@/components/Priority";
+import SelectProject from "@/components/SelectProject";
 import { Textarea } from "@/components/ui/textarea";
 
 import {
@@ -81,19 +82,55 @@ interface Project {
   id: String;
   name: String;
   createdAt: String;
-  updatedAt: String;
-  boards: Array<Board>;
+  updatedAt: null;
+  boards?: Array<Board>;
 }
 
 const Home = () => {
+  const loadprojects = () => {
+    if (typeof window !== "undefined") {
+      const data = localStorage.getItem("projects");
+      return data ? JSON.parse(data) : [];
+    }
+  };
+
   const [boards, setBoards] = useState([]);
   const [project, setProject] = useState<Project>();
+  // const [projects, setProjects] = useState(JSON.parse(localStorage.getItem('projects'))|| [])
+  const [projects, setProjects] = useState(loadprojects);
 
   const [nameProject, setNameProject] = useState("");
 
   const [label, setLabel] = useState("feature");
   const [title, setTitle] = useState("");
   const [open, setOpen] = useState(false);
+
+  const createProject = () => {
+    if (nameProject) {
+      const project = {
+        id: uuid(),
+        name: nameProject,
+        createdAt: `${new Date()}`,
+        updatedAt: null,
+        boards: [],
+      };
+
+      setProjects([...projects, project]);
+      alert(`O nome do projeto é ${nameProject}`);
+    } else {
+      alert("Sem nome definido!");
+    }
+  };
+
+  useEffect(() => {
+    if (projects) {
+      localStorage.setItem("projects", JSON.stringify(projects));
+    }
+  }, [projects]);
+
+  const getProject = (project: Project) => {
+    console.log(project);
+  };
 
   const labels = [
     "feature",
@@ -195,17 +232,17 @@ const Home = () => {
           </div>
           <Tabs defaultValue="account" className="w-full">
             <TabsList>
-              <TabsTrigger value="account">Projects</TabsTrigger>
-              <TabsTrigger value="password">Stats</TabsTrigger>
-              <TabsTrigger value="teste">Teste</TabsTrigger>
+              <TabsTrigger value="CreateProject">Create Project</TabsTrigger>
+              <TabsTrigger value="password">Create Board</TabsTrigger>
+              <TabsTrigger value="teste">Debugger</TabsTrigger>
             </TabsList>
-            <TabsContent value="account">
+            <TabsContent value="CreateProject">
               <p className="text-2xl font-medium text-dark-500 dark:text-light-500 mb-4">
                 Make changes to your account here. Click save when you&apos;re
                 done.
               </p>
 
-              <div className="grid w-full items-center gap-1.5">
+              <div className="grid w-full items-center gap-1.5 mb-4">
                 <Label htmlFor="name-project">Project name:</Label>
                 <Input
                   type="text"
@@ -217,6 +254,12 @@ const Home = () => {
                 />
                 <p className="text-sm text-slate-500">Enter project name.</p>
               </div>
+              <button
+                className="inline-flex px-4 py-2 rounded bg-uv-500 text-light-500"
+                onClick={() => createProject()}
+              >
+                Create Project
+              </button>
               {/* <img src="/images/blklight-thumb.jpg" alt="" /> */}
             </TabsContent>
             <TabsContent value="password" className="w-[600px]">
@@ -224,6 +267,7 @@ const Home = () => {
                 <h1 className="text-3xl font-bold">Create board</h1>
               </div>
               <div className="flex flex-col md:flex-row md:flex-wrap md:items-center gap-6 mb-6">
+                <SelectProject projects={projects} getProject={getProject} />
                 <div className="md:mb-0 mb-2">
                   <span className="flex whitespace-pre font-mono font-medium text-sm py-2 px-3 bg-transparent text-dark-500 dark:text-light-500 border border-slate-300 dark:border-slate-700 rounded-md shadow-md hover:ring-2 hover:ring-gray-300 dark:focus:ring-grey-300">
                     Time: {date}
@@ -303,10 +347,7 @@ const Home = () => {
                 {nameProject}
               </pre>
               <pre className="text-xl text-dark-500 dark:text-light-500">
-                {title}
-              </pre>
-              <pre className="text-xl text-dark-500 dark:text-light-500">
-                {label}
+                {JSON.stringify(projects, undefined, 2)}
               </pre>
             </TabsContent>
           </Tabs>

@@ -36,7 +36,7 @@ type Status = {
 const Status = () => {
   const [open, setOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState<Status | null>(null);
-
+  console.log("Select Status:", selectedStatus);
   const statuses = [
     {
       id: 1,
@@ -53,7 +53,7 @@ const Status = () => {
     {
       id: 3,
       label: "In Progress",
-      value: "inProgress",
+      value: "in progress",
       icon: ArrowUpCircle,
     },
     {
@@ -100,9 +100,9 @@ const Status = () => {
                 {statuses.map((status) => (
                   <CommandItem
                     key={status.value}
-                    onSelect={(value) => {
+                    onSelect={(label) => {
                       setSelectedStatus(
-                        statuses.find((priority) => priority.value === value) ||
+                        statuses.find((priority) => priority.value === label) ||
                           null
                       );
                       setOpen(false);
