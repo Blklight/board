@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useToast } from "@/hooks/ui/use-toast";
 
 import Head from "next/head";
 import Image from "next/image";
@@ -39,6 +40,8 @@ import {
   Tags,
   Trash,
   User,
+  PlusCircle,
+  Plus,
 } from "lucide-react";
 
 import {
@@ -61,6 +64,27 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogClose,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
 interface HomeProp {
   documents: Array<object>;
   initialDisplayDocuments: any;
@@ -74,6 +98,7 @@ interface Board {
   status: String;
   label: String;
   priority: Number;
+  project_id: String;
   createdAt: String;
   updatedAt: String;
 }
@@ -81,9 +106,10 @@ interface Board {
 interface Project {
   id: String;
   name: String;
+  logo: String;
+  description: String;
   createdAt: String;
-  updatedAt: null;
-  boards?: Array<Board>;
+  updatedAt?: String;
 }
 
 const Home = () => {
@@ -95,7 +121,14 @@ const Home = () => {
   };
 
   const [boards, setBoards] = useState([]);
-  const [project, setProject] = useState<Project>();
+  const [project, setProject] = useState<Project>({
+    id: uuid(),
+    name: "",
+    logo: "",
+    description: "",
+    createdAt: "",
+    updatedAt: "",
+  });
   // const [projects, setProjects] = useState(JSON.parse(localStorage.getItem('projects'))|| [])
   const [projects, setProjects] = useState(loadprojects);
 
@@ -104,21 +137,56 @@ const Home = () => {
   const [label, setLabel] = useState("feature");
   const [title, setTitle] = useState("");
   const [open, setOpen] = useState(false);
+  const [openLabels, setOpenLabels] = useState(false);
+  const { toast } = useToast();
 
-  const createProject = () => {
-    if (nameProject) {
-      const project = {
-        id: uuid(),
-        name: nameProject,
-        createdAt: `${new Date()}`,
-        updatedAt: null,
-        boards: [],
-      };
+  const waitDialog = () => new Promise((resolve) => setTimeout(resolve, 1000));
 
+  const handleDisable = () => {
+    return project.name === "" ? true : false;
+  };
+
+  const initialStateProject = {
+    id: uuid(),
+    name: "",
+    logo: "",
+    description: "",
+    createdAt: "",
+    updatedAt: "",
+  };
+
+  const handleSubmitProject = (e: any) => {
+    e.preventDefault();
+    console.log(project);
+    debugger;
+    let isDone = false;
+    if (project.name) {
+      debugger;
+      if (
+        projects.find(
+          (object: any) =>
+            object.name.toLowerCase() === project.name.toLowerCase()
+        )
+      ) {
+        return toast({
+          description: "Already exists a project with this name!",
+        });
+      }
+      console.log(projects);
+      debugger;
       setProjects([...projects, project]);
+      console.log(projects);
+      debugger;
+      isDone = true;
       alert(`O nome do projeto é ${nameProject}`);
+      // resetProject();
     } else {
       alert("Sem nome definido!");
+    }
+
+    if (isDone) {
+      setProject(initialStateProject);
+      waitDialog().then(() => setOpen(false));
     }
   };
 
@@ -141,81 +209,8 @@ const Home = () => {
     "question",
     "maintenance",
   ];
-  // const priority = [
-  //   {
-  //     id: 1,
-  //     title: "Muito Baixa",
-  //   },
-  //   {
-  //     id: 2,
-  //     title: "Baixa",
-  //   },
-  //   {
-  //     id: 3,
-  //     title: "Média",
-  //   },
-  //   {
-  //     id: 4,
-  //     title: "Alta",
-  //   },
-  //   {
-  //     id: 5,
-  //     title: "Muito Alta",
-  //   },
-  // ];
-  // const label = [
-  //   {
-  //     id: 1,
-  //     title: "feature",
-  //   },
-  //   {
-  //     id: 3,
-  //     title: "bug",
-  //   },
-  //   {
-  //     id: 4,
-  //     title: "enhancement",
-  //   },
-  //   {
-  //     id: 5,
-  //     title: "documentation",
-  //   },
-  //   {
-  //     id: 6,
-  //     title: "design",
-  //   },
-  //   {
-  //     id: 7,
-  //     title: "question",
-  //   },
-  //   {
-  //     id: 8,
-  //     title: "maintenance",
-  //   },
-  // ];
-  // const status = [
-  //   {
-  //     id: 1,
-  //     title: "Backlog",
-  //   },
-  //   {
-  //     id: 2,
-  //     title: "Todo",
-  //   },
-  //   {
-  //     id: 3,
-  //     title: "In Progress",
-  //   },
-  //   {
-  //     id: 4,
-  //     title: "Done",
-  //   },
-  //   {
-  //     id: 5,
-  //     title: "Canceled",
-  //   },
-  // ];
-  // console.log(documents);
+
+  // console.log("Line 175:", project);
   const date = format(new Date(), "dd'/'M'/'yyyy, HH:mm");
   return (
     <>
@@ -224,139 +219,238 @@ const Home = () => {
         description={siteMetadata.description}
       />
       <section className="min-home-screen background-texture pb-10">
-        <div className="container-fluid">
-          <div className="space-y-2 py-5 md:space-y-5">
-            <h1 className="text-xl font-extrabold leading-9 tracking-tight text-gray-900 dark:text-gray-100 sm:text-4xl sm:leading-10 md:text-4xl md:leading-14">
-              Articles
-            </h1>
-          </div>
-          <Tabs defaultValue="account" className="w-full">
-            <TabsList>
-              <TabsTrigger value="CreateProject">Create Project</TabsTrigger>
-              <TabsTrigger value="password">Create Board</TabsTrigger>
-              <TabsTrigger value="teste">Debugger</TabsTrigger>
-            </TabsList>
-            <TabsContent value="CreateProject">
-              <p className="text-2xl font-medium text-dark-500 dark:text-light-500 mb-4">
-                Make changes to your account here. Click save when you&apos;re
-                done.
-              </p>
+        <div className="container-fluid py-4">
+          <div className="flex gap-2 mb-2">
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogTrigger asChild>
+                <Button variant={"uv"}>Create Project</Button>
+              </DialogTrigger>
+              <DialogContent>
+                <form onSubmit={handleSubmitProject}>
+                  <DialogHeader>
+                    <DialogTitle>Create Project</DialogTitle>
+                    <DialogDescription>
+                      This action cannot be undone. This will permanently delete
+                      your account and remove your data from our servers.
+                    </DialogDescription>
+                  </DialogHeader>
 
-              <div className="grid w-full items-center gap-1.5 mb-4">
-                <Label htmlFor="name-project">Project name:</Label>
-                <Input
-                  type="text"
-                  id="name-project"
-                  placeholder="Project name..."
-                  onChange={(e) => {
-                    setNameProject(e.target.value);
-                  }}
-                />
-                <p className="text-sm text-slate-500">Enter project name.</p>
-              </div>
-              <button
-                className="inline-flex px-4 py-2 rounded bg-uv-500 text-light-500"
-                onClick={() => createProject()}
-              >
-                Create Project
-              </button>
-              {/* <img src="/images/blklight-thumb.jpg" alt="" /> */}
-            </TabsContent>
-            <TabsContent value="password" className="w-[600px]">
-              <div className="flex justify-between items-center mb-4">
-                <h1 className="text-3xl font-bold">Create board</h1>
-              </div>
-              <div className="flex flex-col md:flex-row md:flex-wrap md:items-center gap-6 mb-6">
-                <SelectProject projects={projects} getProject={getProject} />
-                <div className="md:mb-0 mb-2">
-                  <span className="flex whitespace-pre font-mono font-medium text-sm py-2 px-3 bg-transparent text-dark-500 dark:text-light-500 border border-slate-300 dark:border-slate-700 rounded-md shadow-md hover:ring-2 hover:ring-gray-300 dark:focus:ring-grey-300">
-                    Time: {date}
-                  </span>
-                </div>
-
-                <Status />
-                <Priority />
-              </div>
-
-              <div className="my-4">
-                <div className="relative my-2">
-                  <div className="flex items-center px-3 bg-white dark:bg-dark-800 rounded-md shadow-md border border-slate-300 dark:border-slate-700">
-                    <Popover open={open} onOpenChange={setOpen}>
-                      <PopoverTrigger asChild>
-                        <span className="flex items-center text-light-500 bg-slate-600 font-mono font-medium tracking-wider leading-normal rounded sm:text-sm py-0.5 px-2 cursor-pointer">
-                          <Tags className="mr-2 w-4 h-4" />
-                          {label}
-                        </span>
-                      </PopoverTrigger>
-                      <PopoverContent
-                        className="p-0"
-                        side="bottom"
-                        align="start"
-                      >
-                        <Command>
-                          <CommandInput
-                            placeholder="Filtrar etiqueta..."
-                            autoFocus={true}
-                          />
-                          <CommandList>
-                            <CommandEmpty>No label found.</CommandEmpty>
-                            <CommandGroup>
-                              {labels.map((label) => (
-                                <CommandItem
-                                  key={label}
-                                  onSelect={(value) => {
-                                    setLabel(value);
-                                    setOpen(false);
-                                  }}
-                                >
-                                  {label}
-                                </CommandItem>
-                              ))}
-                            </CommandGroup>
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
-
-                    <input
+                  <div className="grid w-full items-center gap-1 mt-2">
+                    <Label htmlFor="name-project">Project name:</Label>
+                    <Input
                       type="text"
-                      className="w-full p-3 mx-3 focus:outline-none text-dark-500 bg-white dark:text-light-500 dark:bg-dark-800 leading-normal"
-                      name=""
-                      id=""
-                      placeholder="Title..."
+                      id="name-project"
+                      className="shadow-md"
+                      placeholder="Project name..."
                       onChange={(e) => {
-                        setTitle(e.target.value);
+                        setProject({
+                          ...project,
+                          name: e.target.value,
+                          createdAt: `${new Date()}`,
+                        });
+                      }}
+                    />
+                    <p className="text-sm text-slate-500">
+                      Enter project name.
+                    </p>
+                  </div>
+                  <div className="grid w-full items-center gap-1 mt-2">
+                    <Label htmlFor="name-project">Logo:</Label>
+                    <Input
+                      type="text"
+                      id="name-project"
+                      className="shadow-md"
+                      placeholder="Project logo url here..."
+                      onChange={(e) => {
+                        setProject({ ...project, logo: e.target.value });
+                      }}
+                    />
+                    <p className="text-sm text-slate-500">
+                      It's optional. Only if you want.
+                    </p>
+                  </div>
+                  <div className="grid w-full gap-1 mt-2 mb-4">
+                    <Label htmlFor="message">Description:</Label>
+                    <Textarea
+                      className="shadow-md"
+                      placeholder="Write a description..."
+                      id="message"
+                      onChange={(e) => {
+                        setProject({ ...project, description: e.target.value });
                       }}
                     />
                   </div>
-                </div>
+                  <DialogFooter>
+                    <Button
+                      type="submit"
+                      variant={"uv"}
+                      disabled={handleDisable()}
+                    >
+                      Create Project
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </DialogContent>
+            </Dialog>
 
-                <div className="grid w-full gap-1.5 mb-4">
-                  <Label htmlFor="message">Description:</Label>
-                  <Textarea
-                    className="shadow-md"
-                    placeholder="Write a description..."
-                    id="message"
-                  />
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant={"uv"}>Create Board</Button>
+              </SheetTrigger>
+              <SheetContent position="right" size="lg">
+                <SheetHeader>
+                  <SheetTitle>Create board</SheetTitle>
+                  <SheetDescription>
+                    This action cannot be undone. This will permanently delete
+                    your account and remove your data from our servers.
+                  </SheetDescription>
+                </SheetHeader>
+                <div className="grid w-full items-center gap-1.5 mt-2 mb-4">
+                  <SelectProject projects={projects} getProject={getProject} />
+                  <div className="my-2">
+                    <div className="flex items-center px-3 bg-white dark:bg-dark-800 rounded-md shadow-md border border-slate-300 dark:border-slate-700">
+                      <Popover open={openLabels} onOpenChange={setOpenLabels}>
+                        <PopoverTrigger asChild>
+                          <button className="flex items-center text-light-500 bg-blue-700 font-mono font-medium tracking-wider leading-normal rounded sm:text-sm py-1 px-2 cursor-pointer">
+                            <Tags className="mr-2 w-4 h-4" />
+                            {label}
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent
+                          className="p-0"
+                          side="bottom"
+                          align="start"
+                        >
+                          <Command>
+                            <CommandInput
+                              placeholder="Filtrar etiqueta..."
+                              autoFocus={true}
+                            />
+                            <CommandList>
+                              <CommandEmpty>No label found.</CommandEmpty>
+                              <CommandGroup>
+                                {labels.map((label) => (
+                                  <CommandItem
+                                    key={label}
+                                    onSelect={(value) => {
+                                      setLabel(value);
+                                      setOpen(false);
+                                    }}
+                                  >
+                                    {label}
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+
+                      <input
+                        type="text"
+                        className="w-full p-3 mx-3 focus:outline-none text-dark-500 bg-white dark:text-light-500 dark:bg-dark-800 leading-normal"
+                        name=""
+                        id=""
+                        placeholder="Title..."
+                        onChange={(e) => {
+                          setTitle(e.target.value);
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Status />
+                    <Priority />
+                  </div>
+                  <div className="grid w-full gap-1.5 mb-4">
+                    <Label htmlFor="message">Description:</Label>
+                    <Textarea
+                      className="shadow-md"
+                      placeholder="Write a description..."
+                      id="message"
+                    />
+                  </div>
                 </div>
-                <div className="flex gap-5"></div>
+                <SheetFooter>
+                  <div className="md:mb-0 mb-2 mr-auto">
+                    <span className="flex whitespace-pre font-mono font-medium text-sm py-2 px-3 bg-transparent text-dark-500 dark:text-light-500 border border-slate-300 dark:border-slate-700 rounded-md shadow-md">
+                      Created at: {date}
+                    </span>
+                  </div>
+                  {/* <Button
+                    type="submit"
+                    variant={"uv"}
+                    onClick={() => createProject()}
+                  >
+                    Create Project
+                  </Button> */}
+                </SheetFooter>
+              </SheetContent>
+            </Sheet>
+          </div>
+
+          <Tabs defaultValue="projects" className="w-full">
+            <TabsList className="shadow-md">
+              <TabsTrigger value="projects">Projects</TabsTrigger>
+              <TabsTrigger value="boards">Boards</TabsTrigger>
+              <TabsTrigger value="teste">Debugger</TabsTrigger>
+            </TabsList>
+            <TabsContent
+              value="projects"
+              className="bg-transparent dark:bg-transparent border-0 px-0 py-1"
+            >
+              <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
+                {projects &&
+                  projects.length > 0 &&
+                  projects.map((project: any) => (
+                    <div
+                      key={project.id}
+                      className="flex items-center relative p-5 rounded-lg bg-light-500 dark:bg-dark-500 border border-grey-300 dark:border-slate-700 shadow-md"
+                    >
+                      <div className="overflow-hidden w-40 h-40 rounded-full">
+                        <img
+                          src={
+                            project.logo
+                              ? project.logo
+                              : "/images/blklight-thumb.jpg"
+                          }
+                          className="w-40 h-40 object-cover rounded-full transition-all hover:scale-105"
+                          alt=""
+                        />
+                      </div>
+
+                      <div className="ml-4 flex-1">
+                        <h3 className="text-3xl font-bold">{project.name}</h3>
+                        <p className="text-sm font-medium tracking-wide">
+                          Created at:
+                          {format(
+                            new Date(project.createdAt),
+                            "dd'/'M'/'yyyy, HH:mm"
+                          )}
+                        </p>
+                        {project.description && <p>{project.description}</p>}
+                      </div>
+                    </div>
+                  ))}
               </div>
             </TabsContent>
+            <TabsContent value="boards" className="w-[600px]"></TabsContent>
             <TabsContent value="teste">
-              <pre className="text-xl text-dark-500 dark:text-light-500">
-                {nameProject}
-              </pre>
               <pre className="text-xl text-dark-500 dark:text-light-500">
                 {JSON.stringify(projects, undefined, 2)}
               </pre>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  toast({
+                    description: "Your message has been sent.",
+                  });
+                }}
+              >
+                Show Toast
+              </Button>
             </TabsContent>
           </Tabs>
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Natus odio
-            quibusdam aliquam a recusandae cupiditate illo maxime
-            exercitationem, fuga fugiat hic sequi harum ipsam tempora doloribus
-            nulla consectetur deleniti numquam.
-          </p>
         </div>
       </section>
     </>

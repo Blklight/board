@@ -6,6 +6,7 @@ import "katex/dist/katex.css";
 import Head from "next/head";
 import Layout from "@/layouts/Layout";
 import { ThemeProvider } from "next-themes";
+import { Toaster } from "@/components/ui/toaster";
 
 import Barlow from "@/components/Fonts/Barlow";
 import JetBrains from "@/components/Fonts/JetBrainsMono";

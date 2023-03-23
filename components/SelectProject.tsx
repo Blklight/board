@@ -48,13 +48,26 @@ interface Project {
 const SelectProject = ({ projects, getProject }: any) => {
   const [open, setOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  // console.log(
-  //   "Find:",
-  //   projects.find(
-  //     (project: any) => project.id === "4ed1ad5a-4518-431a-bd4a-2b1f188a8d2c"
-  //   )
-  // );
-  // console.log(selectedProject);
+
+  const items = projects.map((project: any) => {
+    return {
+      id: project.id,
+      name: project.name,
+    };
+  });
+
+  const Item = (project: any) => {
+    return (
+      <>
+        <span
+          id={project.id}
+          className="relative flex cursor-pointer select-none items-center rounded-md py-1.5 px-2 text-sm font-medium outline-none aria-selected:bg-slate-100 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 dark:aria-selected:bg-slate-700"
+        >
+          {project.name}
+        </span>
+      </>
+    );
+  };
 
   return (
     <div className="flex items-center md:space-x-4">
@@ -62,8 +75,8 @@ const SelectProject = ({ projects, getProject }: any) => {
         <PopoverTrigger asChild>
           <Button
             variant="outline"
-            size="sm"
-            className="w-[200px] justify-start shadow-md"
+            size="default"
+            className="min-w-[200px] w-full justify-start shadow-md"
           >
             {selectedProject ? (
               <>{selectedProject.name}</>
@@ -74,28 +87,28 @@ const SelectProject = ({ projects, getProject }: any) => {
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="p-0" side="right" align="start">
+        <PopoverContent className="p-0" side="bottom" align="start">
           <Command>
             <CommandInput placeholder="Choose a project..." />
             <CommandList>
               <CommandEmpty>No results found.</CommandEmpty>
               <CommandGroup>
-                {projects.map((project: any) => (
-                  <CommandItem
-                    key={project.id}
-                    onSelect={(project) => {
-                      console.log("87:", project);
-                      setSelectedProject(
-                        projects.find((item: any) => item.id === project) ||
-                          null
-                      );
-                      getProject(selectedProject);
-                      setOpen(false);
-                    }}
-                  >
-                    <span key={project.id}>{project.name}</span>
-                  </CommandItem>
-                ))}
+                {projects.length > 0 ? (
+                  projects.map((project: any) => (
+                    <CommandItem
+                      key={project.id}
+                      onSelect={(value) => {
+                        setSelectedProject(project);
+                        getProject(project);
+                        setOpen(false);
+                      }}
+                    >
+                      <span>{project.name}</span>
+                    </CommandItem>
+                  ))
+                ) : (
+                  <span className="text-center"> Projects not found.</span>
+                )}
               </CommandGroup>
             </CommandList>
           </Command>

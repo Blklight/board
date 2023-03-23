@@ -36,7 +36,6 @@ type Status = {
 const Status = () => {
   const [open, setOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState<Status | null>(null);
-  console.log("Select Status:", selectedStatus);
   const statuses = [
     {
       id: 1,
@@ -71,60 +70,57 @@ const Status = () => {
   ];
 
   return (
-    <div className="flex items-center md:space-x-4">
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-[200px] justify-start shadow-md"
-          >
-            {selectedStatus ? (
-              <>
-                <selectedStatus.icon className="mr-2 h-5 w-5 shrink-0" />
-                {selectedStatus.label}
-              </>
-            ) : (
-              <>
-                <PlusCircle className="mr-2 h-5 w-5" /> Set status
-              </>
-            )}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="p-0" side="right" align="start">
-          <Command>
-            <CommandInput placeholder="Change status..." />
-            <CommandList>
-              <CommandEmpty>No results found.</CommandEmpty>
-              <CommandGroup>
-                {statuses.map((status) => (
-                  <CommandItem
-                    key={status.value}
-                    onSelect={(label) => {
-                      setSelectedStatus(
-                        statuses.find((priority) => priority.value === label) ||
-                          null
-                      );
-                      setOpen(false);
-                    }}
-                  >
-                    <status.icon
-                      className={cn(
-                        "mr-2 h-4 w-4",
-                        status.value === selectedStatus?.value
-                          ? "opacity-100"
-                          : "opacity-50"
-                      )}
-                    />
-                    <span>{status.label}</span>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </CommandList>
-          </Command>
-        </PopoverContent>
-      </Popover>
-    </div>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          className="min-w-[200px] w-full justify-start shadow-md"
+        >
+          {selectedStatus ? (
+            <>
+              <selectedStatus.icon className="mr-2 h-5 w-5 shrink-0" />
+              {selectedStatus.label}
+            </>
+          ) : (
+            <>
+              <PlusCircle className="mr-2 h-5 w-5" /> Set status
+            </>
+          )}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="p-0" side="bottom" align="start">
+        <Command>
+          <CommandInput placeholder="Change status..." />
+          <CommandList>
+            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandGroup>
+              {statuses.map((status) => (
+                <CommandItem
+                  key={status.value}
+                  onSelect={(label) => {
+                    setSelectedStatus(
+                      statuses.find((priority) => priority.value === label) ||
+                        null
+                    );
+                    setOpen(false);
+                  }}
+                >
+                  <status.icon
+                    className={cn(
+                      "mr-2 h-4 w-4",
+                      status.value === selectedStatus?.value
+                        ? "opacity-100"
+                        : "opacity-50"
+                    )}
+                  />
+                  <span>{status.label}</span>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
   );
 };
 

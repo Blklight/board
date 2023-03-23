@@ -79,61 +79,57 @@ const Priority = () => {
   ];
 
   return (
-    <div className="flex items-center md:space-x-4">
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-[200px] justify-start shadow-md"
-          >
-            {selectedPriority ? (
-              <>
-                <selectedPriority.icon className="mr-2 h-6 w-6 shrink-0" />
-                {selectedPriority.label}
-              </>
-            ) : (
-              <>
-                <Signal className="mr-2 h-6 w-6" /> Set priority
-              </>
-            )}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="p-0" side="right" align="start">
-          <Command>
-            <CommandInput placeholder="Change priority..." />
-            <CommandList>
-              <CommandEmpty>No results found.</CommandEmpty>
-              <CommandGroup>
-                {priorities.map((priority) => (
-                  <CommandItem
-                    key={priority.value}
-                    onSelect={(value) => {
-                      setSelectedPriority(
-                        priorities.find(
-                          (priority) => priority.value === value
-                        ) || null
-                      );
-                      setOpen(false);
-                    }}
-                  >
-                    <priority.icon
-                      className={cn(
-                        "mr-2 h-6 w-6",
-                        priority.value === selectedPriority?.value
-                          ? "opacity-100"
-                          : "opacity-50"
-                      )}
-                    />
-                    <span>{priority.label}</span>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </CommandList>
-          </Command>
-        </PopoverContent>
-      </Popover>
-    </div>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          className="min-w-[200px] w-full justify-start shadow-md"
+        >
+          {selectedPriority ? (
+            <>
+              <selectedPriority.icon className="mr-2 h-6 w-6 shrink-0" />
+              {selectedPriority.label}
+            </>
+          ) : (
+            <>
+              <Signal className="mr-2 h-6 w-6" /> Set priority
+            </>
+          )}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="p-0" side="bottom" align="start">
+        <Command>
+          <CommandInput placeholder="Change priority..." />
+          <CommandList>
+            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandGroup>
+              {priorities.map((priority) => (
+                <CommandItem
+                  key={priority.value}
+                  onSelect={(value) => {
+                    setSelectedPriority(
+                      priorities.find((priority) => priority.value === value) ||
+                        null
+                    );
+                    setOpen(false);
+                  }}
+                >
+                  <priority.icon
+                    className={cn(
+                      "mr-2 h-6 w-6",
+                      priority.value === selectedPriority?.value
+                        ? "opacity-100"
+                        : "opacity-50"
+                    )}
+                  />
+                  <span>{priority.label}</span>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
   );
 };
 
