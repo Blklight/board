@@ -39,7 +39,7 @@ type Priority = {
   id: Number;
 };
 
-const Priority = () => {
+const Priority = ({ getPriority }: any) => {
   const [open, setOpen] = useState(false);
   const [selectedPriority, setSelectedPriority] = useState<Priority | null>(
     null
@@ -111,6 +111,7 @@ const Priority = () => {
                       priorities.find((priority) => priority.value === value) ||
                         null
                     );
+                    getPriority(priority.value);
                     setOpen(false);
                   }}
                 >

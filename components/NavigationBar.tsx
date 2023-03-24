@@ -68,41 +68,6 @@ const NavigationBar = () => {
                   />
                 </Link>
               </div>
-
-              <NavigationMenu>
-                <NavigationMenuList>
-                  <NavigationMenuItem>
-                    <NavigationMenuTrigger>Sobre</NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <ul className="grid gap-3 p-2 md:w-[400px] lg:w-[500px] grid-cols-1">
-                        <li>
-                          <Link href="/about">
-                            <NavigationMenuLink>
-                              <div className="flex items-center p-2 rounded-lg hover:bg-white dark:hover:bg-slate-800">
-                                <p className="ml-4 text-base font-semibold tracking-wide leading-normal">
-                                  Sobre Mim
-                                </p>
-                              </div>
-                            </NavigationMenuLink>
-                          </Link>
-                        </li>
-                      </ul>
-                    </NavigationMenuContent>
-                  </NavigationMenuItem>
-                </NavigationMenuList>
-              </NavigationMenu>
-              <Dialog>
-                <DialogTrigger>Open</DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Are you sure absolutely sure?</DialogTitle>
-                    <DialogDescription>
-                      This action cannot be undone. This will permanently delete
-                      your account and remove your data from our servers.
-                    </DialogDescription>
-                  </DialogHeader>
-                </DialogContent>
-              </Dialog>
             </div>
 
             <div className="block px-3">

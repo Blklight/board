@@ -25,6 +25,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { priority } from "@/lib/data";
 
 type Status = {
   value: string;
@@ -33,7 +34,7 @@ type Status = {
   id: Number;
 };
 
-const Status = () => {
+const Status = ({ getStatus }: any) => {
   const [open, setOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState<Status | null>(null);
   const statuses = [
@@ -99,9 +100,9 @@ const Status = () => {
                   key={status.value}
                   onSelect={(label) => {
                     setSelectedStatus(
-                      statuses.find((priority) => priority.value === label) ||
-                        null
+                      statuses.find((item) => item.value === label) || null
                     );
+                    getStatus(status.value);
                     setOpen(false);
                   }}
                 >

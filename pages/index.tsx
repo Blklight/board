@@ -129,12 +129,24 @@ const Home = () => {
     }
   };
 
-  const [boards, setBoards] = useState([]);
+  const [cards, setCards] = useState([]);
   const [project, setProject] = useState<Project>({
     id: uuid(),
     name: "",
     logo: "",
     description: "",
+    createdAt: "",
+    updatedAt: "",
+  });
+
+  const [card, setCard] = useState({
+    id: uuid(),
+    title: "",
+    description: "",
+    status: "in progress",
+    label: "feature",
+    priority: "medium",
+    project_id: "",
     createdAt: "",
     updatedAt: "",
   });
@@ -187,7 +199,9 @@ const Home = () => {
       console.log(projects);
       debugger;
       isDone = true;
-      alert(`O nome do projeto é ${nameProject}`);
+      toast({
+        description: "Project created successfully!",
+      });
       // resetProject();
     } else {
       alert("Sem nome definido!");
@@ -206,7 +220,14 @@ const Home = () => {
   }, [projects]);
 
   const getProject = (project: Project) => {
-    console.log(project);
+    return toast({ description: `${JSON.stringify(project, undefined, 2)}` });
+  };
+
+  const getStatus = (status: any) => {
+    return toast({ description: `${JSON.stringify(status, undefined, 2)}` });
+  };
+  const getPriority = (priority: any) => {
+    return toast({ description: `${JSON.stringify(priority, undefined, 2)}` });
   };
 
   const labels = [
@@ -316,7 +337,7 @@ const Home = () => {
 
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant={"uv"}>Create Board</Button>
+                <Button variant={"uv"}>Create Board Sheet</Button>
               </SheetTrigger>
               <SheetContent position="right" size="lg">
                 <SheetHeader>
@@ -415,6 +436,7 @@ const Home = () => {
             <TabsList className="shadow-md">
               <TabsTrigger value="projects">Projects</TabsTrigger>
               <TabsTrigger value="boards">Boards</TabsTrigger>
+              <TabsTrigger value="create">Create projects/cards</TabsTrigger>
               <TabsTrigger value="teste">Debugger</TabsTrigger>
             </TabsList>
             <TabsContent
@@ -456,7 +478,7 @@ const Home = () => {
                   ))}
               </div>
             </TabsContent>
-            <TabsContent value="boards" className="w-[800px]">
+            <TabsContent value="boards" className="w-[1000px]">
               <h2 className="text-3xl font-bold">Create board</h2>
 
               <div className="grid w-full items-center gap-1.5 mt-2 mb-4">
@@ -514,8 +536,8 @@ const Home = () => {
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <Status />
-                  <Priority />
+                  <Status getStatus={getStatus} />
+                  <Priority getPriority={getPriority} />
                 </div>
                 <div className="grid w-full gap-1.5 mb-4">
                   <Label htmlFor="message">Description:</Label>
@@ -526,6 +548,63 @@ const Home = () => {
                   />
                 </div>
               </div>
+            </TabsContent>
+            <TabsContent value="create">
+              <h2 className="text-3xl font-bold">Create Project</h2>
+              <form onSubmit={handleSubmitProject}>
+                <div className="grid w-full items-center gap-1 mt-2">
+                  <Label htmlFor="name-project">Project name:</Label>
+                  <Input
+                    type="text"
+                    id="name-project"
+                    className="shadow-md"
+                    placeholder="Project name..."
+                    onChange={(e) => {
+                      setProject({
+                        ...project,
+                        name: e.target.value,
+                        createdAt: `${new Date()}`,
+                      });
+                    }}
+                  />
+                  <p className="text-sm text-slate-500">Enter project name.</p>
+                </div>
+                <div className="grid w-full items-center gap-1 mt-2">
+                  <Label htmlFor="name-project">Logo:</Label>
+                  <Input
+                    type="text"
+                    id="name-project"
+                    className="shadow-md"
+                    placeholder="Project logo url here..."
+                    onChange={(e) => {
+                      setProject({ ...project, logo: e.target.value });
+                    }}
+                  />
+                  <p className="text-sm text-slate-500">
+                    It's optional. Only if you want.
+                  </p>
+                </div>
+                <div className="grid w-full gap-1 mt-2 mb-4">
+                  <Label htmlFor="message">Description:</Label>
+                  <Textarea
+                    className="shadow-md"
+                    placeholder="Write a description..."
+                    id="message"
+                    onChange={(e) => {
+                      setProject({ ...project, description: e.target.value });
+                    }}
+                  />
+                </div>
+                <div className="flex justify-end">
+                  <Button
+                    type="submit"
+                    variant={"uv"}
+                    disabled={handleDisable()}
+                  >
+                    Create Project
+                  </Button>
+                </div>
+              </form>
             </TabsContent>
             <TabsContent value="teste">
               <pre className="text-xl text-dark-500 dark:text-light-500">

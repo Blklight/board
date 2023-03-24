@@ -99,7 +99,7 @@ const SelectProject = ({ projects, getProject }: any) => {
                       key={project.id}
                       onSelect={(value) => {
                         setSelectedProject(project);
-                        getProject(project);
+                        getProject(project.id);
                         setOpen(false);
                       }}
                     >
