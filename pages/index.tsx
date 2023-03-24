@@ -100,16 +100,16 @@ interface HomeProp {
   pagination: number;
 }
 
-interface Board {
+interface Card {
   id: String;
   title: String;
   description: String;
   status: String;
   label: String;
-  priority: Number;
+  priority: String;
   project_id: String;
   createdAt: String;
-  updatedAt: String;
+  updatedAt?: String;
 }
 
 interface Project {
@@ -122,49 +122,18 @@ interface Project {
 }
 
 const Home = () => {
-  const loadprojects = () => {
-    if (typeof window !== "undefined") {
-      const data = localStorage.getItem("projects");
-      return data ? JSON.parse(data) : [];
-    }
-  };
-
-  const [cards, setCards] = useState([]);
-  const [project, setProject] = useState<Project>({
-    id: uuid(),
-    name: "",
-    logo: "",
-    description: "",
-    createdAt: "",
-    updatedAt: "",
-  });
-
-  const [card, setCard] = useState({
-    id: uuid(),
-    title: "",
-    description: "",
-    status: "in progress",
-    label: "feature",
-    priority: "medium",
-    project_id: "",
-    createdAt: "",
-    updatedAt: "",
-  });
-  // const [projects, setProjects] = useState(JSON.parse(localStorage.getItem('projects'))|| [])
-  const [projects, setProjects] = useState(loadprojects);
-
-  const [nameProject, setNameProject] = useState("");
-
-  const [label, setLabel] = useState("feature");
-  const [title, setTitle] = useState("");
-  const [open, setOpen] = useState(false);
-  const [openLabels, setOpenLabels] = useState(false);
   const { toast } = useToast();
 
-  const waitDialog = () => new Promise((resolve) => setTimeout(resolve, 1000));
+  const loadData = () => {
+    if (typeof window !== "undefined") {
+      const loadProjects = localStorage.getItem("projects");
+      const loadCards = localStorage.getItem("cards");
 
-  const handleDisable = () => {
-    return project.name === "" ? true : false;
+      return {
+        projects: loadProjects ? JSON.parse(loadProjects) : [],
+        cards: loadCards ? JSON.parse(loadCards) : [],
+      };
+    }
   };
 
   const initialStateProject = {
@@ -174,6 +143,39 @@ const Home = () => {
     description: "",
     createdAt: "",
     updatedAt: "",
+  };
+
+  const initialStateCard = {
+    id: uuid(),
+    title: "",
+    description: "",
+    status: "in progress",
+    label: "feature",
+    priority: "medium",
+    project_id: "",
+    createdAt: "",
+    updatedAt: "",
+  };
+
+  const [projects, setProjects] = useState<Project[]>(loadData()?.projects);
+  const [cards, setCards] = useState<Card[]>(loadData()?.cards);
+
+  const [project, setProject] = useState<Project>({
+    ...initialStateProject,
+  });
+  const [card, setCard] = useState<Card>({ ...initialStateCard });
+
+  const [open, setOpen] = useState(false);
+  const [openLabels, setOpenLabels] = useState(false);
+
+  const waitDialog = () => new Promise((resolve) => setTimeout(resolve, 1000));
+
+  const handleDisable = () => {
+    return project.name === "" ? true : false;
+  };
+
+  const handleCardDisable = () => {
+    return card.title === "" ? true : false;
   };
 
   const handleSubmitProject = (e: any) => {
@@ -213,21 +215,50 @@ const Home = () => {
     }
   };
 
+  const handleSubmitCard = (e: any) => {
+    e.preventDefault();
+    // setCard({ ...card, updatedAt: `${new Date()}` });
+    let isDone = false;
+
+    if (card.title) {
+      if (cards.find((obj: any) => obj.label === card.label)) {
+        return toast({
+          title: "Repeated label",
+          description: `Already exists a card labeled as ${card.label}!`,
+        });
+      }
+      setCards([...cards, card]);
+      isDone = true;
+    } else {
+      return toast({
+        title: "Repeated label",
+        description: `Already exists a card labeled as ${card.label}!`,
+      });
+    }
+    if (isDone) {
+    }
+  };
+
   useEffect(() => {
     if (projects) {
       localStorage.setItem("projects", JSON.stringify(projects));
     }
   }, [projects]);
 
-  const getProject = (project: Project) => {
-    return toast({ description: `${JSON.stringify(project, undefined, 2)}` });
-  };
+  useEffect(() => {
+    if (cards) {
+      localStorage.setItem("cards", JSON.stringify(cards));
+    }
+  }, [cards]);
 
-  const getStatus = (status: any) => {
-    return toast({ description: `${JSON.stringify(status, undefined, 2)}` });
+  const getProject = (projectId: string) => {
+    setCard({ ...card, project_id: projectId });
   };
-  const getPriority = (priority: any) => {
-    return toast({ description: `${JSON.stringify(priority, undefined, 2)}` });
+  const getStatus = (status: string) => {
+    setCard({ ...card, status: status });
+  };
+  const getPriority = (priority: string) => {
+    setCard({ ...card, priority: priority });
   };
 
   const labels = [
@@ -356,7 +387,7 @@ const Home = () => {
                         <PopoverTrigger asChild>
                           <button className="flex items-center text-light-500 bg-blue-700 font-mono font-medium tracking-wider leading-normal rounded sm:text-sm py-1 px-2 cursor-pointer">
                             <Tags className="mr-2 w-4 h-4" />
-                            {label}
+                            {card.label}
                           </button>
                         </PopoverTrigger>
                         <PopoverContent
@@ -376,7 +407,6 @@ const Home = () => {
                                   <CommandItem
                                     key={label}
                                     onSelect={(value) => {
-                                      setLabel(value);
                                       setOpen(false);
                                     }}
                                   >
@@ -395,9 +425,6 @@ const Home = () => {
                         name=""
                         id=""
                         placeholder="Title..."
-                        onChange={(e) => {
-                          setTitle(e.target.value);
-                        }}
                       />
                     </div>
                   </div>
@@ -435,7 +462,7 @@ const Home = () => {
           <Tabs defaultValue="projects" className="w-full">
             <TabsList className="shadow-md">
               <TabsTrigger value="projects">Projects</TabsTrigger>
-              <TabsTrigger value="boards">Boards</TabsTrigger>
+              <TabsTrigger value="cards">Cards</TabsTrigger>
               <TabsTrigger value="create">Create projects/cards</TabsTrigger>
               <TabsTrigger value="teste">Debugger</TabsTrigger>
             </TabsList>
@@ -478,76 +505,93 @@ const Home = () => {
                   ))}
               </div>
             </TabsContent>
-            <TabsContent value="boards" className="w-[1000px]">
-              <h2 className="text-3xl font-bold">Create board</h2>
+            <TabsContent value="cards" className="w-[1000px]">
+              <h2 className="text-3xl font-bold">Create card</h2>
+              <form onSubmit={handleSubmitCard}>
+                <div className="grid w-full items-center gap-1.5 mt-2 mb-4">
+                  <SelectProject projects={projects} getProject={getProject} />
 
-              <div className="grid w-full items-center gap-1.5 mt-2 mb-4">
-                <SelectProject projects={projects} getProject={getProject} />
+                  <div className="my-2">
+                    <div className="flex items-center px-3 bg-white dark:bg-dark-800 rounded-md shadow-md border border-slate-300 dark:border-slate-700">
+                      <Popover open={openLabels} onOpenChange={setOpenLabels}>
+                        <PopoverTrigger asChild>
+                          <button className="flex items-center text-light-500 bg-blue-700 font-mono font-medium tracking-wider leading-normal rounded sm:text-sm py-1 px-2 cursor-pointer">
+                            <Tags className="mr-2 w-4 h-4" />
+                            {card.label}
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent
+                          className="p-0"
+                          side="bottom"
+                          align="start"
+                        >
+                          <Command>
+                            <CommandInput
+                              placeholder="Filtrar etiqueta..."
+                              autoFocus={true}
+                            />
+                            <CommandList>
+                              <CommandEmpty>No label found.</CommandEmpty>
+                              <CommandGroup>
+                                {labels.map((label) => (
+                                  <CommandItem
+                                    key={label}
+                                    onSelect={(value) => {
+                                      setCard({ ...card, label: value });
+                                      setOpen(false);
+                                    }}
+                                  >
+                                    {label}
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
 
-                <div className="my-2">
-                  <div className="flex items-center px-3 bg-white dark:bg-dark-800 rounded-md shadow-md border border-slate-300 dark:border-slate-700">
-                    <Popover open={openLabels} onOpenChange={setOpenLabels}>
-                      <PopoverTrigger asChild>
-                        <button className="flex items-center text-light-500 bg-blue-700 font-mono font-medium tracking-wider leading-normal rounded sm:text-sm py-1 px-2 cursor-pointer">
-                          <Tags className="mr-2 w-4 h-4" />
-                          {label}
-                        </button>
-                      </PopoverTrigger>
-                      <PopoverContent
-                        className="p-0"
-                        side="bottom"
-                        align="start"
-                      >
-                        <Command>
-                          <CommandInput
-                            placeholder="Filtrar etiqueta..."
-                            autoFocus={true}
-                          />
-                          <CommandList>
-                            <CommandEmpty>No label found.</CommandEmpty>
-                            <CommandGroup>
-                              {labels.map((label) => (
-                                <CommandItem
-                                  key={label}
-                                  onSelect={(value) => {
-                                    setLabel(value);
-                                    setOpen(false);
-                                  }}
-                                >
-                                  {label}
-                                </CommandItem>
-                              ))}
-                            </CommandGroup>
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
-
-                    <input
-                      type="text"
-                      className="w-full p-3 mx-3 focus:outline-none text-dark-500 bg-white dark:text-light-500 dark:bg-dark-800 leading-normal"
-                      name=""
-                      id=""
-                      placeholder="Title..."
-                      onChange={(e) => {
-                        setTitle(e.target.value);
-                      }}
+                      <input
+                        type="text"
+                        className="w-full p-3 mx-3 focus:outline-none text-dark-500 bg-white dark:text-light-500 dark:bg-dark-800 leading-normal"
+                        name=""
+                        id=""
+                        placeholder="Title..."
+                        onChange={(e) => {
+                          setCard({
+                            ...card,
+                            title: e.target.value,
+                            createdAt: `${new Date()}`,
+                          });
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Status getStatus={getStatus} />
+                    <Priority getPriority={getPriority} />
+                  </div>
+                  <div className="grid w-full gap-1.5 mb-4">
+                    <Label htmlFor="message">Description:</Label>
+                    <Textarea
+                      className="shadow-md"
+                      placeholder="Write a description..."
+                      id="message"
+                      onChange={(e) =>
+                        setCard({ ...card, description: e.target.value })
+                      }
                     />
                   </div>
+                  <div className="flex justify-end">
+                    <Button
+                      type="submit"
+                      variant={"uv"}
+                      disabled={handleCardDisable()}
+                    >
+                      Create Card
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex gap-2">
-                  <Status getStatus={getStatus} />
-                  <Priority getPriority={getPriority} />
-                </div>
-                <div className="grid w-full gap-1.5 mb-4">
-                  <Label htmlFor="message">Description:</Label>
-                  <Textarea
-                    className="shadow-md"
-                    placeholder="Write a description..."
-                    id="message"
-                  />
-                </div>
-              </div>
+              </form>
             </TabsContent>
             <TabsContent value="create">
               <h2 className="text-3xl font-bold">Create Project</h2>
