@@ -43,6 +43,7 @@ const App = ({ Component, pageProps }: AppProps) => {
         {/* {isDevelopment && isSocket && <ClientReload />} */}
         <Layout>
           <Component {...pageProps} />
+          <Toaster />
         </Layout>
       </ThemeProvider>
     </>

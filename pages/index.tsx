@@ -19,6 +19,7 @@ import Status from "@/components/Status";
 import Priority from "@/components/Priority";
 import SelectProject from "@/components/SelectProject";
 import { Textarea } from "@/components/ui/textarea";
+import { CommandCombobox } from "@/components/Combobox";
 
 import {
   Command,
@@ -84,6 +85,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface HomeProp {
   documents: Array<object>;
@@ -255,6 +264,16 @@ const Home = () => {
                     </p>
                   </div>
                   <div className="grid w-full items-center gap-1 mt-2">
+                    <Select>
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Theme" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="light">Light</SelectItem>
+                        <SelectItem value="dark">Dark</SelectItem>
+                        <SelectItem value="system">System</SelectItem>
+                      </SelectContent>
+                    </Select>
                     <Label htmlFor="name-project">Logo:</Label>
                     <Input
                       type="text"
@@ -280,6 +299,8 @@ const Home = () => {
                       }}
                     />
                   </div>
+
+                  <Status />
                   <DialogFooter>
                     <Button
                       type="submit"
@@ -307,6 +328,7 @@ const Home = () => {
                 </SheetHeader>
                 <div className="grid w-full items-center gap-1.5 mt-2 mb-4">
                   <SelectProject projects={projects} getProject={getProject} />
+
                   <div className="my-2">
                     <div className="flex items-center px-3 bg-white dark:bg-dark-800 rounded-md shadow-md border border-slate-300 dark:border-slate-700">
                       <Popover open={openLabels} onOpenChange={setOpenLabels}>
@@ -434,7 +456,77 @@ const Home = () => {
                   ))}
               </div>
             </TabsContent>
-            <TabsContent value="boards" className="w-[600px]"></TabsContent>
+            <TabsContent value="boards" className="w-[800px]">
+              <h2 className="text-3xl font-bold">Create board</h2>
+
+              <div className="grid w-full items-center gap-1.5 mt-2 mb-4">
+                <SelectProject projects={projects} getProject={getProject} />
+
+                <div className="my-2">
+                  <div className="flex items-center px-3 bg-white dark:bg-dark-800 rounded-md shadow-md border border-slate-300 dark:border-slate-700">
+                    <Popover open={openLabels} onOpenChange={setOpenLabels}>
+                      <PopoverTrigger asChild>
+                        <button className="flex items-center text-light-500 bg-blue-700 font-mono font-medium tracking-wider leading-normal rounded sm:text-sm py-1 px-2 cursor-pointer">
+                          <Tags className="mr-2 w-4 h-4" />
+                          {label}
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent
+                        className="p-0"
+                        side="bottom"
+                        align="start"
+                      >
+                        <Command>
+                          <CommandInput
+                            placeholder="Filtrar etiqueta..."
+                            autoFocus={true}
+                          />
+                          <CommandList>
+                            <CommandEmpty>No label found.</CommandEmpty>
+                            <CommandGroup>
+                              {labels.map((label) => (
+                                <CommandItem
+                                  key={label}
+                                  onSelect={(value) => {
+                                    setLabel(value);
+                                    setOpen(false);
+                                  }}
+                                >
+                                  {label}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+
+                    <input
+                      type="text"
+                      className="w-full p-3 mx-3 focus:outline-none text-dark-500 bg-white dark:text-light-500 dark:bg-dark-800 leading-normal"
+                      name=""
+                      id=""
+                      placeholder="Title..."
+                      onChange={(e) => {
+                        setTitle(e.target.value);
+                      }}
+                    />
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Status />
+                  <Priority />
+                </div>
+                <div className="grid w-full gap-1.5 mb-4">
+                  <Label htmlFor="message">Description:</Label>
+                  <Textarea
+                    className="shadow-md"
+                    placeholder="Write a description..."
+                    id="message"
+                  />
+                </div>
+              </div>
+            </TabsContent>
             <TabsContent value="teste">
               <pre className="text-xl text-dark-500 dark:text-light-500">
                 {JSON.stringify(projects, undefined, 2)}
