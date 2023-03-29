@@ -11,7 +11,7 @@ const Sheet = SheetPrimitive.Root;
 
 const SheetTrigger = SheetPrimitive.Trigger;
 
-const portalVariants = cva("fixed inset-0 z-[101] flex", {
+const portalVariants = cva("fixed inset-0 z-50 flex", {
   variants: {
     position: {
       top: "items-start",
@@ -45,7 +45,7 @@ const SheetOverlay = React.forwardRef<
 >(({ className, children, ...props }, ref) => (
   <SheetPrimitive.Overlay
     className={cn(
-      "data-[state=closed]:animate-out data-[state=open]:fade-in data-[state=closed]:fade-out fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm transition-all duration-100",
+      "data-[state=closed]:animate-out data-[state=open]:fade-in data-[state=closed]:fade-out fixed inset-0 z-50 bg-black/50 backdrop-blur-sm transition-all duration-100",
       className
     )}
     {...props}
@@ -55,7 +55,7 @@ const SheetOverlay = React.forwardRef<
 SheetOverlay.displayName = SheetPrimitive.Overlay.displayName;
 
 const sheetVariants = cva(
-  "fixed z-[100] scale-100 gap-4 bg-white p-6 opacity-100 dark:bg-slate-900",
+  "fixed z-50 scale-100 gap-4 bg-white p-6 opacity-100 dark:bg-slate-900",
   {
     variants: {
       position: {

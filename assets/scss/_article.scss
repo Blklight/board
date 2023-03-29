@@ -154,7 +154,7 @@
   position: relative;
 
   .sticky-image {
-    z-index: 89;
+    z-index: 30;
     position: sticky;
     top: 0;
     height: calc(100vh - 60px);
@@ -164,7 +164,7 @@
   }
 
   .sticky-content {
-    z-index: 89;
+    z-index: 30;
     position: sticky;
     top: 0;
   }
@@ -176,7 +176,7 @@
   }
 
   &-overlay {
-    z-index: 90;
+    z-index: 35;
     position: absolute;
     top: 0;
     right: 0;

@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
+  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
@@ -42,7 +43,7 @@ const NavigationBar = () => {
   useEffect(() => setMounted(true), []);
 
   return (
-    <header className="flex justify-between items-center px-5 sticky top-0 dark:bg-dark-500 bg-light-500 shrink z-[100] h-16 w-full border-b border-b-slate-500 dark:border-b-slate-700">
+    <header className="flex justify-between items-center px-5 sticky top-0 dark:bg-dark-500 bg-light-500 shrink z-40 h-16 w-full border-b border-b-slate-500 dark:border-b-slate-700">
       <nav className="grow">
         <div className="">
           <div className="flex grow items-center justify-between flex-row">
@@ -71,29 +72,31 @@ const NavigationBar = () => {
             </div>
 
             <div className="block px-3">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    className="ml-6"
-                    variant="outline"
-                    size="sm"
-                    onClick={() =>
-                      setTheme(currentTheme === "dark" ? "light" : "dark")
-                    }
-                  >
-                    {mounted && (
-                      <>
-                        <SunMedium className="hidden dark:block" />
-                        <Moon className="block dark:hidden" />
-                      </>
-                    )}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent align="center" side="left">
-                  <p className="hidden dark:block">Modo claro</p>
-                  <p className="block dark:hidden">Modo escuro</p>
-                </TooltipContent>
-              </Tooltip>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      className="ml-6"
+                      variant="outline"
+                      size="sm"
+                      onClick={() =>
+                        setTheme(currentTheme === "dark" ? "light" : "dark")
+                      }
+                    >
+                      {mounted && (
+                        <>
+                          <SunMedium className="hidden dark:block" />
+                          <Moon className="block dark:hidden" />
+                        </>
+                      )}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent align="center" side="left">
+                    <p className="hidden dark:block">Modo claro</p>
+                    <p className="block dark:hidden">Modo escuro</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
           </div>
         </div>

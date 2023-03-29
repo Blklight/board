@@ -470,7 +470,7 @@ const Home = () => {
               value="projects"
               className="bg-transparent dark:bg-transparent border-0 px-0 py-1"
             >
-              <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
+              <section className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
                 {projects &&
                   projects.length > 0 &&
                   projects.map((project: any) => (
@@ -503,7 +503,7 @@ const Home = () => {
                       </div>
                     </div>
                   ))}
-              </div>
+              </section>
             </TabsContent>
             <TabsContent value="cards" className="w-[1000px]">
               <h2 className="text-3xl font-bold">Create card</h2>
