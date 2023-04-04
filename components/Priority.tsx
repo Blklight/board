@@ -91,8 +91,10 @@ const ShowPriority = ({ priority }: any) => {
   return (
     <>
       {priorityToShow && (
-        <div className="border border-dark-500 dark:border-light-500 rounded-md">
-          <priorityToShow.icon className="mr-2 h-4 w-4" />
+        <div
+          className={`flex items-center px-2 font-bold leading-normal tracking-wide rounded ${priorityToShow.style}`}
+        >
+          <priorityToShow.icon className="mr-1 h-5 w-5" />
           {priorityToShow.label}
         </div>
       )}

@@ -2,18 +2,10 @@ import { format } from "date-fns";
 
 import { ShowStatus } from "@/components/Status";
 
-import { Card, Project } from "@/types/types";
+import { CardTaskProp, ProjectCardProp } from "@/types/types";
 import { ShowPriority } from "@/components/Priority";
 import { statuses } from "@/lib/data";
 import { Tags } from "lucide-react";
-
-interface CardTaskProp {
-  card: Card;
-}
-
-interface ProjectCardProp {
-  project: Project;
-}
 
 const TaskCard = ({ card }: CardTaskProp) => {
   const borderCard = statuses.find((obj) => obj.value === card.status);

@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Status, ShowStatus } from "@/components/Status";
-import Priority from "@/components/Priority";
+import { Priority } from "@/components/Priority";
 import SelectProject from "@/components/SelectProject";
 import { Textarea } from "@/components/ui/textarea";
 import { CommandCombobox } from "@/components/Combobox";

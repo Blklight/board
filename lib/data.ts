@@ -29,30 +29,35 @@ const priorities = [
     label: "Heavy Low",
     value: "heavy low",
     icon: SignalZero,
+    style: "text-light-500 bg-gradient-to-r from-lime-500 to-emerald-500",
   },
   {
     id: 2,
     label: "Low",
     value: "low",
     icon: SignalLow,
+    style: "text-light-500 bg-gradient-to-r from-emerald-500 to-blue-500",
   },
   {
     id: 3,
     label: "Medium",
     value: "medium",
     icon: SignalMedium,
+    style: "text-light-500 bg-gradient-to-r from-blue-500 to-fuchsia-600",
   },
   {
     id: 4,
     label: "High",
     value: "high",
     icon: SignalHigh,
+    style: "text-light-500 bg-gradient-to-r from-fuchsia-600 to-crimson-500",
   },
   {
     id: 5,
     label: "Heavy High",
     value: "heavy high",
     icon: Signal,
+    style: "text-light-500 bg-gradient-to-r from-crimson-500 to-dark-500",
   },
 ];
 

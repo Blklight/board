@@ -1,21 +1,23 @@
 import { LucideIcon } from "lucide-react";
 
-interface Priority {
+export type Priority = {
   value: string;
   label: string;
   icon: LucideIcon;
   id: Number;
-}
-interface Project {
+  style: string;
+};
+
+export type Project = {
   id: String;
   name: String;
   logo?: String;
   description: String;
   createdAt: String;
   updatedAt?: String;
-}
+};
 
-interface Card {
+export type Card = {
   id: String;
   title: String;
   description: String;
@@ -25,15 +27,21 @@ interface Card {
   project_id: String;
   createdAt: String;
   updatedAt?: String;
-}
+};
 
-interface Status {
+export type Status = {
   value: string;
   label: string;
   icon: LucideIcon;
   id: Number;
   style: string;
   card: string;
-}
+};
 
-export { Card, Priority, Project, Status };
+export type CardTaskProp = {
+  card: Card;
+};
+
+export type ProjectCardProp = {
+  project: Project;
+};
