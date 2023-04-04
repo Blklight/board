@@ -1,116 +1,102 @@
 import {
+  // PlusCircle,
   ArrowUpCircle,
   CheckCircle2,
   Circle,
   HelpCircle,
-  LucideIcon,
+  // LucideIcon,
   XCircle,
+  SignalZero,
+  SignalLow,
+  SignalMedium,
+  SignalHigh,
+  Signal,
 } from "lucide-react";
 
-const priority = [
+const labels = [
+  "feature",
+  "bug",
+  "enhancement",
+  "documentation",
+  "design",
+  "question",
+  "maintenance",
+];
+
+const priorities = [
   {
     id: 1,
-    title: "Muito Baixa",
-    value: "1",
+    label: "Heavy Low",
+    value: "heavy low",
+    icon: SignalZero,
   },
   {
     id: 2,
-    title: "Baixa",
-    value: "25",
+    label: "Low",
+    value: "low",
+    icon: SignalLow,
   },
   {
     id: 3,
-    title: "Média",
-    value: "50",
+    label: "Medium",
+    value: "medium",
+    icon: SignalMedium,
   },
   {
     id: 4,
-    title: "Alta",
-    value: "75",
+    label: "High",
+    value: "high",
+    icon: SignalHigh,
   },
   {
     id: 5,
-    title: "Muito Alta",
-    value: "100",
+    label: "Heavy High",
+    value: "heavy high",
+    icon: Signal,
   },
 ];
 
-const label = [
+const statuses = [
   {
     id: 1,
-    title: "feature",
-    value: "feature",
-  },
-  {
-    id: 3,
-    title: "bug",
-    value: "bug",
-  },
-  {
-    id: 4,
-    title: "enhancement",
-    value: "enhancement",
-  },
-  {
-    id: 5,
-    title: "documentation",
-    value: "enhancement",
-  },
-  {
-    id: 6,
-    title: "design",
-    value: "design",
-  },
-  {
-    id: 7,
-    title: "question",
-    value: "question",
-  },
-  {
-    id: 8,
-    title: "maintenance",
-    value: "maintenance",
-  },
-];
-
-type Status = {
-  value: string;
-  label: string;
-  icon: LucideIcon;
-  id: Number;
-};
-
-const status = [
-  {
-    id: 1,
-    title: "Backlog",
+    label: "Backlog",
     value: "backlog",
     icon: HelpCircle,
+    style: "bg-sky-500 text-light-500",
+    card: "border-sky-500",
   },
   {
     id: 2,
-    title: "Todo",
+    label: "Todo",
     value: "todo",
     icon: Circle,
+    style: "bg-blue-700 text-light-500",
+    card: "border-blue-700",
   },
   {
     id: 3,
-    title: "In Progress",
-    value: "inProgress",
+    label: "In Progress",
+    value: "in progress",
     icon: ArrowUpCircle,
+    style: "bg-yellow-500 text-dark-500",
+    card: "border-yellow-500",
   },
   {
     id: 4,
-    title: "Done",
+    label: "Done",
     value: "done",
     icon: CheckCircle2,
+    style: "bg-emerald-500 text-light-500",
+    card: "border-emerald-500",
   },
   {
     id: 5,
-    title: "Canceled",
+    label: "Canceled",
     value: "canceled",
     icon: XCircle,
+    style: "bg-crimson-500 text-light-500",
+    card: "border-crimson-500",
   },
 ];
 
-export { priority, status, label };
+export { labels, priorities, statuses };

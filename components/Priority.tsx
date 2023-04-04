@@ -1,12 +1,5 @@
 import { useState } from "react";
-import {
-  SignalZero,
-  SignalLow,
-  SignalMedium,
-  SignalHigh,
-  Signal,
-  LucideIcon,
-} from "lucide-react";
+import { Signal } from "lucide-react";
 
 import { cn } from "@/lib/utilities";
 import { Button } from "@/components/ui/button";
@@ -25,58 +18,14 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-type Status = {
-  value: string;
-  label: string;
-  icon: LucideIcon;
-  id: Number;
-};
-
-type Priority = {
-  value: string;
-  label: string;
-  icon: LucideIcon;
-  id: Number;
-};
+import { priorities } from "@/lib/data";
+import { Priority } from "@/types/types";
 
 const Priority = ({ getPriority }: any) => {
   const [open, setOpen] = useState(false);
   const [selectedPriority, setSelectedPriority] = useState<Priority | null>(
     null
   );
-
-  const priorities = [
-    {
-      id: 1,
-      label: "Heavy Low",
-      value: "heavy low",
-      icon: SignalZero,
-    },
-    {
-      id: 2,
-      label: "Low",
-      value: "low",
-      icon: SignalLow,
-    },
-    {
-      id: 3,
-      label: "Medium",
-      value: "medium",
-      icon: SignalMedium,
-    },
-    {
-      id: 4,
-      label: "High",
-      value: "high",
-      icon: SignalHigh,
-    },
-    {
-      id: 5,
-      label: "Heavy High",
-      value: "heavy high",
-      icon: Signal,
-    },
-  ];
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -134,4 +83,21 @@ const Priority = ({ getPriority }: any) => {
   );
 };
 
-export default Priority;
+const ShowPriority = ({ priority }: any) => {
+  const [priorityToShow, setPriorityToShow] = useState<Priority | null>(
+    (): any => priorities.find((obj) => obj.value === priority)
+  );
+
+  return (
+    <>
+      {priorityToShow && (
+        <div className="border border-dark-500 dark:border-light-500 rounded-md">
+          <priorityToShow.icon className="mr-2 h-4 w-4" />
+          {priorityToShow.label}
+        </div>
+      )}
+    </>
+  );
+};
+
+export { Priority, ShowPriority };

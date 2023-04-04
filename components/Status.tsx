@@ -1,13 +1,5 @@
 import { useState } from "react";
-import {
-  PlusCircle,
-  ArrowUpCircle,
-  CheckCircle2,
-  Circle,
-  HelpCircle,
-  LucideIcon,
-  XCircle,
-} from "lucide-react";
+import { PlusCircle } from "lucide-react";
 
 import { cn } from "@/lib/utilities";
 import { Button } from "@/components/ui/button";
@@ -25,50 +17,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { priority } from "@/lib/data";
-
-type Status = {
-  value: string;
-  label: string;
-  icon: LucideIcon;
-  id: Number;
-};
+import { statuses } from "@/lib/data";
+import { Status } from "@/types/types";
 
 const Status = ({ getStatus }: any) => {
   const [open, setOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState<Status | null>(null);
-  const statuses = [
-    {
-      id: 1,
-      label: "Backlog",
-      value: "backlog",
-      icon: HelpCircle,
-    },
-    {
-      id: 2,
-      label: "Todo",
-      value: "todo",
-      icon: Circle,
-    },
-    {
-      id: 3,
-      label: "In Progress",
-      value: "in progress",
-      icon: ArrowUpCircle,
-    },
-    {
-      id: 4,
-      label: "Done",
-      value: "done",
-      icon: CheckCircle2,
-    },
-    {
-      id: 5,
-      label: "Canceled",
-      value: "canceled",
-      icon: XCircle,
-    },
-  ];
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -125,4 +79,30 @@ const Status = ({ getStatus }: any) => {
   );
 };
 
-export default Status;
+const ShowStatus = ({ status = "backlog" }: any) => {
+  const [statusToShow, setStatusToShow] = useState<Status | null>((): any =>
+    statuses.find((obj) => obj.value === status)
+  );
+
+  console.log(
+    status,
+    statusToShow,
+    statuses.find((obj) => obj.value === status)
+  );
+  return (
+    <>
+      {statusToShow && (
+        <>
+          <div
+            className={`inline-flex items-center px-2 py-1 rounded font-medium tracking-wider leading-normal ${statusToShow.style}`}
+          >
+            <statusToShow.icon className="mr-2 h-4 w-4" />
+            {statusToShow.label}
+          </div>
+        </>
+      )}
+    </>
+  );
+};
+
+export { Status, ShowStatus };

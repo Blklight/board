@@ -10,12 +10,12 @@ import { format } from "date-fns";
 
 import { PageSEO } from "@/components/SEO";
 import siteMetadata from "@/content/siteMetadata";
-import { status, priority, label } from "@/lib/data";
+import { labels } from "@/lib/data";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import Status from "@/components/Status";
+import { Status, ShowStatus } from "@/components/Status";
 import Priority from "@/components/Priority";
 import SelectProject from "@/components/SelectProject";
 import { Textarea } from "@/components/ui/textarea";
@@ -78,7 +78,7 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogClose,
+  // DialogClose,
   DialogDescription,
   DialogFooter,
   DialogHeader,
@@ -94,31 +94,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+import { TaskCard, ProjectCard } from "@/components/Cards";
+
+import { Card, Project } from "@/types/types";
+
 interface HomeProp {
   documents: Array<object>;
   initialDisplayDocuments: any;
   pagination: number;
-}
-
-interface Card {
-  id: String;
-  title: String;
-  description: String;
-  status: String;
-  label: String;
-  priority: String;
-  project_id: String;
-  createdAt: String;
-  updatedAt?: String;
-}
-
-interface Project {
-  id: String;
-  name: String;
-  logo: String;
-  description: String;
-  createdAt: String;
-  updatedAt?: String;
 }
 
 const Home = () => {
@@ -149,7 +132,7 @@ const Home = () => {
     id: uuid(),
     title: "",
     description: "",
-    status: "in progress",
+    status: "backlog",
     label: "feature",
     priority: "medium",
     project_id: "",
@@ -167,6 +150,7 @@ const Home = () => {
 
   const [open, setOpen] = useState(false);
   const [openLabels, setOpenLabels] = useState(false);
+  const [openSheet, setOpenSheet] = useState(false);
 
   const waitDialog = () => new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -220,6 +204,8 @@ const Home = () => {
     // setCard({ ...card, updatedAt: `${new Date()}` });
     let isDone = false;
 
+    // console.log(card);
+
     if (card.title) {
       if (cards.find((obj: any) => obj.label === card.label)) {
         return toast({
@@ -235,7 +221,10 @@ const Home = () => {
         description: `Already exists a card labeled as ${card.label}!`,
       });
     }
+
     if (isDone) {
+      setCard(initialStateCard);
+      waitDialog().then(() => setOpenSheet(false));
     }
   };
 
@@ -261,16 +250,6 @@ const Home = () => {
     setCard({ ...card, priority: priority });
   };
 
-  const labels = [
-    "feature",
-    "bug",
-    "enhancement",
-    "documentation",
-    "design",
-    "question",
-    "maintenance",
-  ];
-
   // console.log("Line 175:", project);
   const date = format(new Date(), "dd'/'M'/'yyyy, HH:mm");
   return (
@@ -287,174 +266,196 @@ const Home = () => {
                 <Button variant={"uv"}>Create Project</Button>
               </DialogTrigger>
               <DialogContent>
-                <form onSubmit={handleSubmitProject}>
-                  <DialogHeader>
-                    <DialogTitle>Create Project</DialogTitle>
-                    <DialogDescription>
-                      This action cannot be undone. This will permanently delete
-                      your account and remove your data from our servers.
-                    </DialogDescription>
-                  </DialogHeader>
-
-                  <div className="grid w-full items-center gap-1 mt-2">
-                    <Label htmlFor="name-project">Project name:</Label>
-                    <Input
-                      type="text"
-                      id="name-project"
-                      className="shadow-md"
-                      placeholder="Project name..."
-                      onChange={(e) => {
-                        setProject({
-                          ...project,
-                          name: e.target.value,
-                          createdAt: `${new Date()}`,
-                        });
-                      }}
-                    />
-                    <p className="text-sm text-slate-500">
-                      Enter project name.
-                    </p>
-                  </div>
-                  <div className="grid w-full items-center gap-1 mt-2">
-                    <Select>
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Theme" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="light">Light</SelectItem>
-                        <SelectItem value="dark">Dark</SelectItem>
-                        <SelectItem value="system">System</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Label htmlFor="name-project">Logo:</Label>
-                    <Input
-                      type="text"
-                      id="name-project"
-                      className="shadow-md"
-                      placeholder="Project logo url here..."
-                      onChange={(e) => {
-                        setProject({ ...project, logo: e.target.value });
-                      }}
-                    />
-                    <p className="text-sm text-slate-500">
-                      It's optional. Only if you want.
-                    </p>
-                  </div>
-                  <div className="grid w-full gap-1 mt-2 mb-4">
-                    <Label htmlFor="message">Description:</Label>
-                    <Textarea
-                      className="shadow-md"
-                      placeholder="Write a description..."
-                      id="message"
-                      onChange={(e) => {
-                        setProject({ ...project, description: e.target.value });
-                      }}
-                    />
-                  </div>
-
-                  <Status />
-                  <DialogFooter>
-                    <Button
-                      type="submit"
-                      variant={"uv"}
-                      disabled={handleDisable()}
-                    >
-                      Create Project
-                    </Button>
-                  </DialogFooter>
-                </form>
+                <DialogHeader>
+                  <DialogTitle>Create Project</DialogTitle>
+                  <DialogDescription>
+                    This action cannot be undone. This will permanently delete
+                    your account and remove your data from our servers.
+                  </DialogDescription>
+                </DialogHeader>
+                <>
+                  <form onSubmit={handleSubmitProject}>
+                    <div className="grid w-full items-center gap-1 mt-2">
+                      <Label htmlFor="name-project">Project name:</Label>
+                      <Input
+                        type="text"
+                        id="name-project"
+                        className="shadow-md"
+                        placeholder="Project name..."
+                        onChange={(e) => {
+                          setProject({
+                            ...project,
+                            name: e.target.value,
+                            createdAt: `${new Date()}`,
+                          });
+                        }}
+                      />
+                      <p className="text-sm text-slate-500">
+                        Enter project name.
+                      </p>
+                    </div>
+                    <div className="grid w-full items-center gap-1 mt-2">
+                      <Label htmlFor="name-project">Logo:</Label>
+                      <Input
+                        type="text"
+                        id="name-project"
+                        className="shadow-md"
+                        placeholder="Project logo url here..."
+                        onChange={(e) => {
+                          setProject({ ...project, logo: e.target.value });
+                        }}
+                      />
+                      <p className="text-sm text-slate-500">
+                        It's optional. Only if you want.
+                      </p>
+                    </div>
+                    <div className="grid w-full gap-1 mt-2 mb-4">
+                      <Label htmlFor="message">Description:</Label>
+                      <Textarea
+                        className="shadow-md"
+                        placeholder="Write a description..."
+                        id="message"
+                        onChange={(e) => {
+                          setProject({
+                            ...project,
+                            description: e.target.value,
+                          });
+                        }}
+                      />
+                    </div>
+                    <div className="flex justify-end">
+                      <Button
+                        type="submit"
+                        variant={"uv"}
+                        disabled={handleDisable()}
+                      >
+                        Create Project
+                      </Button>
+                    </div>
+                  </form>
+                </>
               </DialogContent>
             </Dialog>
 
-            <Sheet>
+            <Sheet open={openSheet} onOpenChange={setOpenSheet}>
               <SheetTrigger asChild>
                 <Button variant={"uv"}>Create Board Sheet</Button>
               </SheetTrigger>
               <SheetContent position="right" size="lg">
-                <SheetHeader>
-                  <SheetTitle>Create board</SheetTitle>
-                  <SheetDescription>
-                    This action cannot be undone. This will permanently delete
-                    your account and remove your data from our servers.
-                  </SheetDescription>
-                </SheetHeader>
-                <div className="grid w-full items-center gap-1.5 mt-2 mb-4">
-                  <SelectProject projects={projects} getProject={getProject} />
-
-                  <div className="my-2">
-                    <div className="flex items-center px-3 bg-white dark:bg-dark-800 rounded-md shadow-md border border-slate-300 dark:border-slate-700">
-                      <Popover open={openLabels} onOpenChange={setOpenLabels}>
-                        <PopoverTrigger asChild>
-                          <button className="flex items-center text-light-500 bg-blue-700 font-mono font-medium tracking-wider leading-normal rounded sm:text-sm py-1 px-2 cursor-pointer">
-                            <Tags className="mr-2 w-4 h-4" />
-                            {card.label}
-                          </button>
-                        </PopoverTrigger>
-                        <PopoverContent
-                          className="p-0"
-                          side="bottom"
-                          align="start"
-                        >
-                          <Command>
-                            <CommandInput
-                              placeholder="Filtrar etiqueta..."
-                              autoFocus={true}
-                            />
-                            <CommandList>
-                              <CommandEmpty>No label found.</CommandEmpty>
-                              <CommandGroup>
-                                {labels.map((label) => (
-                                  <CommandItem
-                                    key={label}
-                                    onSelect={(value) => {
-                                      setOpen(false);
-                                    }}
-                                  >
-                                    {label}
-                                  </CommandItem>
-                                ))}
-                              </CommandGroup>
-                            </CommandList>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
-
-                      <input
-                        type="text"
-                        className="w-full p-3 mx-3 focus:outline-none text-dark-500 bg-white dark:text-light-500 dark:bg-dark-800 leading-normal"
-                        name=""
-                        id=""
-                        placeholder="Title..."
+                <form onSubmit={handleSubmitCard}>
+                  <SheetHeader>
+                    <SheetTitle>Create board</SheetTitle>
+                    <SheetDescription>
+                      This action cannot be undone. This will permanently delete
+                      your account and remove your data from our servers.
+                    </SheetDescription>
+                  </SheetHeader>
+                  <>
+                    <div className="grid w-full items-center gap-1.5 mt-2 mb-4">
+                      <SelectProject
+                        projects={projects}
+                        getProject={getProject}
                       />
+
+                      <div className="my-2">
+                        <div className="flex items-center px-3 bg-white dark:bg-dark-800 rounded-md shadow-md border border-slate-300 dark:border-slate-700">
+                          <Popover
+                            open={openLabels}
+                            onOpenChange={setOpenLabels}
+                          >
+                            <PopoverTrigger asChild>
+                              <button className="flex items-center text-light-500 bg-blue-700 font-mono font-medium tracking-wider leading-normal rounded sm:text-sm py-1 px-2 cursor-pointer">
+                                <Tags className="mr-2 w-4 h-4" />
+                                {card.label}
+                              </button>
+                            </PopoverTrigger>
+                            <PopoverContent
+                              className="p-0"
+                              side="bottom"
+                              align="start"
+                            >
+                              <Command>
+                                <CommandInput
+                                  placeholder="Filtrar etiqueta..."
+                                  autoFocus={true}
+                                />
+                                <CommandList>
+                                  <CommandEmpty>No label found.</CommandEmpty>
+                                  <CommandGroup>
+                                    {labels.map((label) => (
+                                      <CommandItem
+                                        key={label}
+                                        onSelect={(value) => {
+                                          setCard({ ...card, label: value });
+                                          setOpenLabels(false);
+                                        }}
+                                      >
+                                        {label}
+                                      </CommandItem>
+                                    ))}
+                                  </CommandGroup>
+                                </CommandList>
+                              </Command>
+                            </PopoverContent>
+                          </Popover>
+
+                          <input
+                            type="text"
+                            className="w-full p-3 mx-3 focus:outline-none text-dark-500 bg-white dark:text-light-500 dark:bg-dark-800 leading-normal"
+                            name=""
+                            id=""
+                            placeholder="Title..."
+                            onChange={(e) => {
+                              setCard({
+                                ...card,
+                                title: e.target.value,
+                                createdAt: `${new Date()}`,
+                              });
+                            }}
+                          />
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Status getStatus={getStatus} />
+                        <Priority getPriority={getPriority} />
+                      </div>
+                      <div className="grid w-full gap-1.5 mb-4">
+                        <Label htmlFor="message">Description:</Label>
+                        <Textarea
+                          className="shadow-md"
+                          placeholder="Write a description..."
+                          id="message"
+                          onChange={(e) =>
+                            setCard({ ...card, description: e.target.value })
+                          }
+                        />
+                      </div>
+                      {/* <div className="flex justify-end">
+                        <Button
+                          type="submit"
+                          variant={"uv"}
+                          disabled={handleCardDisable()}
+                        >
+                          Create Card
+                        </Button>
+                      </div> */}
                     </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <Status />
-                    <Priority />
-                  </div>
-                  <div className="grid w-full gap-1.5 mb-4">
-                    <Label htmlFor="message">Description:</Label>
-                    <Textarea
-                      className="shadow-md"
-                      placeholder="Write a description..."
-                      id="message"
-                    />
-                  </div>
-                </div>
-                <SheetFooter>
-                  <div className="md:mb-0 mb-2 mr-auto">
-                    <span className="flex whitespace-pre font-mono font-medium text-sm py-2 px-3 bg-transparent text-dark-500 dark:text-light-500 border border-slate-300 dark:border-slate-700 rounded-md shadow-md">
-                      Created at: {date}
-                    </span>
-                  </div>
-                  {/* <Button
-                    type="submit"
-                    variant={"uv"}
-                    onClick={() => createProject()}
-                  >
-                    Create Project
-                  </Button> */}
-                </SheetFooter>
+                  </>
+                  <SheetFooter>
+                    <div className="md:mb-0 mb-2 mr-auto">
+                      <span className="flex whitespace-pre font-mono font-medium text-sm py-2 px-3 bg-transparent text-dark-500 dark:text-light-500 border border-slate-300 dark:border-slate-700 rounded-md shadow-md">
+                        Created at: {date}
+                      </span>
+                    </div>
+                    <Button
+                      type="submit"
+                      variant={"uv"}
+                      disabled={handleCardDisable()}
+                    >
+                      Create Card
+                    </Button>
+                  </SheetFooter>
+                </form>
               </SheetContent>
             </Sheet>
           </div>
@@ -470,128 +471,26 @@ const Home = () => {
               value="projects"
               className="bg-transparent dark:bg-transparent border-0 px-0 py-1"
             >
-              <section className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
-                {projects &&
-                  projects.length > 0 &&
-                  projects.map((project: any) => (
-                    <div
-                      key={project.id}
-                      className="flex items-center relative p-5 rounded-lg bg-light-500 dark:bg-dark-500 border border-grey-300 dark:border-slate-700 shadow-md"
-                    >
-                      <div className="overflow-hidden w-40 h-40 rounded-full">
-                        <img
-                          src={
-                            project.logo
-                              ? project.logo
-                              : "/images/blklight-thumb.jpg"
-                          }
-                          className="w-40 h-40 object-cover rounded-full transition-all hover:scale-105"
-                          alt=""
-                        />
-                      </div>
-
-                      <div className="ml-4 flex-1">
-                        <h3 className="text-3xl font-bold">{project.name}</h3>
-                        <p className="text-sm font-medium tracking-wide">
-                          Created at:
-                          {format(
-                            new Date(project.createdAt),
-                            "dd'/'M'/'yyyy, HH:mm"
-                          )}
-                        </p>
-                        {project.description && <p>{project.description}</p>}
-                      </div>
-                    </div>
-                  ))}
-              </section>
+              <>
+                <section className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
+                  {projects &&
+                    projects.length > 0 &&
+                    projects.map((project: any) => (
+                      <ProjectCard key={project.id} project={project} />
+                    ))}
+                </section>
+              </>
             </TabsContent>
-            <TabsContent value="cards" className="w-[1000px]">
-              <h2 className="text-3xl font-bold">Create card</h2>
-              <form onSubmit={handleSubmitCard}>
-                <div className="grid w-full items-center gap-1.5 mt-2 mb-4">
-                  <SelectProject projects={projects} getProject={getProject} />
-
-                  <div className="my-2">
-                    <div className="flex items-center px-3 bg-white dark:bg-dark-800 rounded-md shadow-md border border-slate-300 dark:border-slate-700">
-                      <Popover open={openLabels} onOpenChange={setOpenLabels}>
-                        <PopoverTrigger asChild>
-                          <button className="flex items-center text-light-500 bg-blue-700 font-mono font-medium tracking-wider leading-normal rounded sm:text-sm py-1 px-2 cursor-pointer">
-                            <Tags className="mr-2 w-4 h-4" />
-                            {card.label}
-                          </button>
-                        </PopoverTrigger>
-                        <PopoverContent
-                          className="p-0"
-                          side="bottom"
-                          align="start"
-                        >
-                          <Command>
-                            <CommandInput
-                              placeholder="Filtrar etiqueta..."
-                              autoFocus={true}
-                            />
-                            <CommandList>
-                              <CommandEmpty>No label found.</CommandEmpty>
-                              <CommandGroup>
-                                {labels.map((label) => (
-                                  <CommandItem
-                                    key={label}
-                                    onSelect={(value) => {
-                                      setCard({ ...card, label: value });
-                                      setOpen(false);
-                                    }}
-                                  >
-                                    {label}
-                                  </CommandItem>
-                                ))}
-                              </CommandGroup>
-                            </CommandList>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
-
-                      <input
-                        type="text"
-                        className="w-full p-3 mx-3 focus:outline-none text-dark-500 bg-white dark:text-light-500 dark:bg-dark-800 leading-normal"
-                        name=""
-                        id=""
-                        placeholder="Title..."
-                        onChange={(e) => {
-                          setCard({
-                            ...card,
-                            title: e.target.value,
-                            createdAt: `${new Date()}`,
-                          });
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <Status getStatus={getStatus} />
-                    <Priority getPriority={getPriority} />
-                  </div>
-                  <div className="grid w-full gap-1.5 mb-4">
-                    <Label htmlFor="message">Description:</Label>
-                    <Textarea
-                      className="shadow-md"
-                      placeholder="Write a description..."
-                      id="message"
-                      onChange={(e) =>
-                        setCard({ ...card, description: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="flex justify-end">
-                    <Button
-                      type="submit"
-                      variant={"uv"}
-                      disabled={handleCardDisable()}
-                    >
-                      Create Card
-                    </Button>
-                  </div>
-                </div>
-              </form>
+            <TabsContent value="cards" className="border-0 bg-transparent px-1">
+              <>
+                <section className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
+                  {cards &&
+                    cards.length > 0 &&
+                    cards.map((card: any) => (
+                      <TaskCard key={card.id} card={card} />
+                    ))}
+                </section>
+              </>
             </TabsContent>
             <TabsContent value="create">
               <h2 className="text-3xl font-bold">Create Project</h2>
@@ -653,6 +552,9 @@ const Home = () => {
             <TabsContent value="teste">
               <pre className="text-xl text-dark-500 dark:text-light-500">
                 {JSON.stringify(projects, undefined, 2)}
+              </pre>
+              <pre className="text-xl text-dark-500 dark:text-light-500">
+                {JSON.stringify(cards, undefined, 2)}
               </pre>
               <Button
                 variant="outline"
