@@ -50,14 +50,14 @@ const priorities = [
     label: "High",
     value: "high",
     icon: SignalHigh,
-    style: "text-light-500 bg-gradient-to-r from-fuchsia-600 to-crimson-500",
+    style: "text-light-500 bg-gradient-to-r from-fuchsia-600 to-crimson-500 ",
   },
   {
     id: 5,
     label: "Heavy High",
     value: "heavy high",
     icon: Signal,
-    style: "text-light-500 bg-gradient-to-r from-crimson-500 to-dark-500",
+    style: "text-light-500 bg-gradient-to-r from-crimson-500 to-dark-500 ",
   },
 ];
 
@@ -68,7 +68,7 @@ const statuses = [
     value: "backlog",
     icon: HelpCircle,
     style: "bg-sky-500 text-light-500",
-    card: "border-sky-500",
+    card: "!border-sky-500",
   },
   {
     id: 2,
@@ -76,7 +76,7 @@ const statuses = [
     value: "todo",
     icon: Circle,
     style: "bg-blue-700 text-light-500",
-    card: "border-blue-700",
+    card: "!border-blue-700",
   },
   {
     id: 3,
@@ -84,7 +84,7 @@ const statuses = [
     value: "in progress",
     icon: ArrowUpCircle,
     style: "bg-yellow-500 text-dark-500",
-    card: "border-yellow-500",
+    card: "!border-yellow-500",
   },
   {
     id: 4,
@@ -92,7 +92,7 @@ const statuses = [
     value: "done",
     icon: CheckCircle2,
     style: "bg-emerald-500 text-light-500",
-    card: "border-emerald-500",
+    card: "!border-emerald-500",
   },
   {
     id: 5,
@@ -100,7 +100,7 @@ const statuses = [
     value: "canceled",
     icon: XCircle,
     style: "bg-crimson-500 text-light-500",
-    card: "border-crimson-500",
+    card: "!border-crimson-500",
   },
 ];
 

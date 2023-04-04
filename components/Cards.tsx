@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import { useToast } from "@/hooks/ui/use-toast";
 
 import { ShowStatus } from "@/components/Status";
 
@@ -9,16 +10,26 @@ import { Tags } from "lucide-react";
 
 const TaskCard = ({ card }: CardTaskProp) => {
   const borderCard = statuses.find((obj) => obj.value === card.status);
-  console.log(borderCard);
+
+  const { toast } = useToast();
+
   return (
     <>
       {card && (
         <div
-          className={`bg-light-500 dark:bg-dark-500 dark:text-light-500 border p-4 rounded-lg relative shadow-lg my-2 ${borderCard?.card}`}
+          className={`glass dark:text-light-500 border p-4 rounded-lg relative shadow-lg my-2 ${borderCard?.card}`}
         >
-          <div className="absolute -top-4">
+          <button
+            className="absolute -top-4 cursor-pointer"
+            onClick={() =>
+              toast({
+                title: `${card.title}`,
+                description: `${card.description}`,
+              })
+            }
+          >
             <ShowStatus status={card.status} />
-          </div>
+          </button>
 
           <div className="flex justify-between my-2">
             <span className="inline-flex items-center text-light-500 bg-blue-700 font-mono font-medium tracking-wider leading-normal rounded sm:text-sm py-1 px-2">

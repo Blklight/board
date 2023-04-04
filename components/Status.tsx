@@ -84,11 +84,6 @@ const ShowStatus = ({ status = "backlog" }: any) => {
     statuses.find((obj) => obj.value === status)
   );
 
-  console.log(
-    status,
-    statusToShow,
-    statuses.find((obj) => obj.value === status)
-  );
   return (
     <>
       {statusToShow && (

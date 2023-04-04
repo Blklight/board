@@ -152,7 +152,7 @@ const Home = () => {
   const [openLabels, setOpenLabels] = useState(false);
   const [openSheet, setOpenSheet] = useState(false);
 
-  const waitDialog = () => new Promise((resolve) => setTimeout(resolve, 1000));
+  const waitDialog = () => new Promise((resolve) => setTimeout(resolve, 200));
 
   const handleDisable = () => {
     return project.name === "" ? true : false;
@@ -164,11 +164,9 @@ const Home = () => {
 
   const handleSubmitProject = (e: any) => {
     e.preventDefault();
-    console.log(project);
-    debugger;
+
     let isDone = false;
     if (project.name) {
-      debugger;
       if (
         projects.find(
           (object: any) =>
@@ -179,18 +177,11 @@ const Home = () => {
           description: "Already exists a project with this name!",
         });
       }
-      console.log(projects);
-      debugger;
       setProjects([...projects, project]);
-      console.log(projects);
-      debugger;
       isDone = true;
       toast({
         description: "Project created successfully!",
       });
-      // resetProject();
-    } else {
-      alert("Sem nome definido!");
     }
 
     if (isDone) {
@@ -203,28 +194,27 @@ const Home = () => {
     e.preventDefault();
     // setCard({ ...card, updatedAt: `${new Date()}` });
     let isDone = false;
-
-    // console.log(card);
+    const alreadyExistsCard = cards.find(
+      (obj) => obj.title === card.title && obj.label === card.label
+    );
 
     if (card.title) {
-      if (cards.find((obj: any) => obj.label === card.label)) {
+      if (alreadyExistsCard) {
         return toast({
-          title: "Repeated label",
-          description: `Already exists a card labeled as ${card.label}!`,
+          title: "Repeated title and label",
+          description: `Already exists a card labeled as ${card.label} and with ${card.title}, we recommend that you change the label!`,
         });
       }
       setCards([...cards, card]);
       isDone = true;
-    } else {
-      return toast({
-        title: "Repeated label",
-        description: `Already exists a card labeled as ${card.label}!`,
-      });
     }
 
     if (isDone) {
       setCard(initialStateCard);
       waitDialog().then(() => setOpenSheet(false));
+      return toast({
+        title: "Card registered successfully!",
+      });
     }
   };
 
@@ -481,7 +471,10 @@ const Home = () => {
                 </section>
               </>
             </TabsContent>
-            <TabsContent value="cards" className="border-0 bg-transparent px-1">
+            <TabsContent
+              value="cards"
+              className="border-0 bg-transparent dark:bg-transparent px-1"
+            >
               <>
                 <section className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
                   {cards &&
