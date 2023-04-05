@@ -85,18 +85,14 @@ const ShowStatus = ({ status = "backlog" }: any) => {
   );
 
   return (
-    <>
-      {statusToShow && (
-        <>
-          <div
-            className={`inline-flex items-center px-2 py-1 rounded font-medium tracking-wider leading-normal ${statusToShow.style}`}
-          >
-            <statusToShow.icon className="mr-2 h-4 w-4" />
-            {statusToShow.label}
-          </div>
-        </>
-      )}
-    </>
+    statusToShow && (
+      <div
+        className={`inline-flex items-center px-2 py-1 rounded text-lg font-medium tracking-wider leading-normal ${statusToShow.style}`}
+      >
+        <statusToShow.icon className="mr-2 h-4 w-4" />
+        {statusToShow.label}
+      </div>
+    )
   );
 };
 

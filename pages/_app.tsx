@@ -33,12 +33,12 @@ const App = ({ Component, pageProps }: AppProps) => {
   return (
     <>
       <style jsx global>{`
-				:root {
-					--font-sans: ${Barlow.style.fontFamily};
+        :root {
+          --font-sans: ${Barlow.style.fontFamily};
           --font-serif: ${IBMPlexSerif.style.fontFamily};
-          --font-mono: ${JetBrains.style.fontFamily}
-				}
-			}`}</style>
+          --font-mono: ${JetBrains.style.fontFamily};
+        }
+      `}</style>
       <ThemeProvider enableSystem={true} attribute="class">
         {/* {isDevelopment && isSocket && <ClientReload />} */}
         <Layout>

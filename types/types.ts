@@ -4,36 +4,36 @@ export type Priority = {
   value: string;
   label: string;
   icon: LucideIcon;
-  id: Number;
+  id: number;
   style: string;
 };
 
 export type Project = {
-  id: String;
-  name: String;
-  logo?: String;
-  description: String;
-  createdAt: String;
-  updatedAt?: String;
+  id: string;
+  name: string;
+  logo?: string;
+  description: string;
+  createdAt: string;
+  updatedAt?: string;
 };
 
 export type Card = {
-  id: String;
-  title: String;
-  description: String;
-  status: String;
-  label: String;
-  priority: String;
-  project_id: String;
-  createdAt: String;
-  updatedAt?: String;
+  id: string;
+  title: string;
+  description: string;
+  status: string;
+  label: string;
+  priority: string;
+  project_id: string;
+  createdAt: string;
+  updatedAt?: string;
 };
 
 export type Status = {
   value: string;
   label: string;
   icon: LucideIcon;
-  id: Number;
+  id: number;
   style: string;
   card: string;
 };
