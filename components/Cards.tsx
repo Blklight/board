@@ -18,7 +18,7 @@ import {
 
 import { ShowProject } from "@/components/Projects";
 
-import { ShowStatus } from "@/components/Status";
+import { StatusCardSelector } from "@/components/Status";
 import { ShowPriority } from "@/components/Priority";
 import { statuses } from "@/lib/data";
 import { Tags } from "lucide-react";
@@ -44,7 +44,7 @@ const TaskCard = ({ card }: CardTaskProp): JSX.Element => {
           })
         }
       >
-        <ShowStatus status={card.status} />
+        <StatusCardSelector status={card.status} card={card} />
       </button>
 
       <div className="flex justify-between my-3">

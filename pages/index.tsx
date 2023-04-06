@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import { useToast } from "@/hooks/ui/use-toast";
-import { ProjectContext } from "@/contexts/contexts";
+import { ProjectContext, CardContext } from "@/contexts/contexts";
 
 import { v4 as uuid } from "uuid";
 import { format } from "date-fns";
@@ -209,184 +209,194 @@ const Home = () => {
   return (
     <>
       <ProjectContext.Provider value={{ projects, setProjects }}>
-        <PageSEO
-          title={siteMetadata.title}
-          description={siteMetadata.description}
-        />
-        <section className="min-home-screen background-texture pb-10">
-          <div className="container-fluid py-4">
-            <div className="flex gap-2 mb-2">
-              <Dialog open={open} onOpenChange={setOpen}>
-                <DialogTrigger asChild>
-                  <Button variant={"uv"}>Create Project</Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Create Project</DialogTitle>
-                    <DialogDescription>
-                      This action cannot be undone. This will permanently delete
-                      your account and remove your data from our servers.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <>
-                    <form onSubmit={handleSubmitProject}>
-                      <div className="grid w-full items-center gap-1 mt-2">
-                        <Label htmlFor="name-project">Project name:</Label>
-                        <Input
-                          type="text"
-                          id="name-project"
-                          className="shadow-md"
-                          placeholder="Project name..."
-                          onChange={(e) => {
-                            setProject({
-                              ...project,
-                              name: e.target.value,
-                              createdAt: `${new Date()}`,
-                            });
-                          }}
-                        />
-                        <p className="text-sm text-slate-500">
-                          Enter project name.
-                        </p>
-                      </div>
-                      <div className="grid w-full items-center gap-1 mt-2">
-                        <Label htmlFor="name-project">Logo:</Label>
-                        <Input
-                          type="text"
-                          id="name-project"
-                          className="shadow-md"
-                          placeholder="Project logo url here..."
-                          onChange={(e) => {
-                            setProject({ ...project, logo: e.target.value });
-                          }}
-                        />
-                        <p className="text-sm text-slate-500">
-                          It's optional. Only if you want.
-                        </p>
-                      </div>
-                      <div className="grid w-full gap-1 mt-2 mb-4">
-                        <Label htmlFor="message">Description:</Label>
-                        <Textarea
-                          className="shadow-md"
-                          placeholder="Write a description..."
-                          id="message"
-                          onChange={(e) => {
-                            setProject({
-                              ...project,
-                              description: e.target.value,
-                            });
-                          }}
-                        />
-                      </div>
-                      <div className="flex justify-end">
-                        <Button
-                          type="submit"
-                          variant={"uv"}
-                          disabled={handleDisable()}
-                        >
-                          Create Project
-                        </Button>
-                      </div>
-                    </form>
-                  </>
-                </DialogContent>
-              </Dialog>
-
-              <Sheet open={openSheet} onOpenChange={setOpenSheet}>
-                <SheetTrigger asChild>
-                  <Button variant={"uv"}>Create Board Sheet</Button>
-                </SheetTrigger>
-                <SheetContent position="right" size="lg">
-                  <form onSubmit={handleSubmitCard}>
-                    <SheetHeader>
-                      <SheetTitle>Create board</SheetTitle>
-                      <SheetDescription>
+        <CardContext.Provider value={{ cards, setCards }}>
+          <PageSEO
+            title={siteMetadata.title}
+            description={siteMetadata.description}
+          />
+          <section className="min-home-screen background-texture pb-10">
+            <div className="container-fluid py-4">
+              <div className="flex gap-2 mb-2">
+                <Dialog open={open} onOpenChange={setOpen}>
+                  <DialogTrigger asChild>
+                    <Button variant={"uv"}>Create Project</Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Create Project</DialogTitle>
+                      <DialogDescription>
                         This action cannot be undone. This will permanently
                         delete your account and remove your data from our
                         servers.
-                      </SheetDescription>
-                    </SheetHeader>
+                      </DialogDescription>
+                    </DialogHeader>
                     <>
-                      <div className="grid w-full items-center gap-1.5 mt-2 mb-4">
-                        <SelectProject
-                          projects={projects}
-                          getProject={getProject}
-                        />
-
-                        <div className="my-2">
-                          <div className="flex items-center px-3 bg-white dark:bg-dark-800 rounded-md shadow-md border border-slate-300 dark:border-slate-700">
-                            <Popover
-                              open={openLabels}
-                              onOpenChange={setOpenLabels}
-                            >
-                              <PopoverTrigger asChild>
-                                <button className="flex items-center text-light-500 bg-blue-700 font-mono font-medium tracking-wider leading-normal rounded sm:text-sm py-1 px-2 cursor-pointer">
-                                  <Tags className="mr-2 w-4 h-4" />
-                                  {card.label}
-                                </button>
-                              </PopoverTrigger>
-                              <PopoverContent
-                                className="p-0"
-                                side="bottom"
-                                align="start"
-                              >
-                                <Command>
-                                  <CommandInput
-                                    placeholder="Filtrar etiqueta..."
-                                    autoFocus={true}
-                                  />
-                                  <CommandList>
-                                    <CommandEmpty>No label found.</CommandEmpty>
-                                    <CommandGroup>
-                                      {labels.map((label) => (
-                                        <CommandItem
-                                          key={label}
-                                          onSelect={(value) => {
-                                            setCard({ ...card, label: value });
-                                            setOpenLabels(false);
-                                          }}
-                                        >
-                                          {label}
-                                        </CommandItem>
-                                      ))}
-                                    </CommandGroup>
-                                  </CommandList>
-                                </Command>
-                              </PopoverContent>
-                            </Popover>
-
-                            <input
-                              type="text"
-                              className="w-full p-3 mx-3 focus:outline-none text-dark-500 bg-white dark:text-light-500 dark:bg-dark-800 leading-normal"
-                              name=""
-                              id=""
-                              placeholder="Title..."
-                              onChange={(e) => {
-                                setCard({
-                                  ...card,
-                                  title: e.target.value,
-                                  createdAt: `${new Date()}`,
-                                });
-                              }}
-                            />
-                          </div>
+                      <form onSubmit={handleSubmitProject}>
+                        <div className="grid w-full items-center gap-1 mt-2">
+                          <Label htmlFor="name-project">Project name:</Label>
+                          <Input
+                            type="text"
+                            id="name-project"
+                            className="shadow-md"
+                            placeholder="Project name..."
+                            onChange={(e) => {
+                              setProject({
+                                ...project,
+                                name: e.target.value,
+                                createdAt: `${new Date()}`,
+                              });
+                            }}
+                          />
+                          <p className="text-sm text-slate-500">
+                            Enter project name.
+                          </p>
                         </div>
-                        <div className="flex gap-2">
-                          <Status getStatus={getStatus} />
-                          <Priority getPriority={getPriority} />
+                        <div className="grid w-full items-center gap-1 mt-2">
+                          <Label htmlFor="name-project">Logo:</Label>
+                          <Input
+                            type="text"
+                            id="name-project"
+                            className="shadow-md"
+                            placeholder="Project logo url here..."
+                            onChange={(e) => {
+                              setProject({ ...project, logo: e.target.value });
+                            }}
+                          />
+                          <p className="text-sm text-slate-500">
+                            It's optional. Only if you want.
+                          </p>
                         </div>
-                        <div className="grid w-full gap-1.5 mb-4">
+                        <div className="grid w-full gap-1 mt-2 mb-4">
                           <Label htmlFor="message">Description:</Label>
                           <Textarea
                             className="shadow-md"
                             placeholder="Write a description..."
                             id="message"
-                            onChange={(e) =>
-                              setCard({ ...card, description: e.target.value })
-                            }
+                            onChange={(e) => {
+                              setProject({
+                                ...project,
+                                description: e.target.value,
+                              });
+                            }}
                           />
                         </div>
-                        {/* <div className="flex justify-end">
+                        <div className="flex justify-end">
+                          <Button
+                            type="submit"
+                            variant={"uv"}
+                            disabled={handleDisable()}
+                          >
+                            Create Project
+                          </Button>
+                        </div>
+                      </form>
+                    </>
+                  </DialogContent>
+                </Dialog>
+
+                <Sheet open={openSheet} onOpenChange={setOpenSheet}>
+                  <SheetTrigger asChild>
+                    <Button variant={"uv"}>Create Board Sheet</Button>
+                  </SheetTrigger>
+                  <SheetContent position="right" size="lg">
+                    <form onSubmit={handleSubmitCard}>
+                      <SheetHeader>
+                        <SheetTitle>Create board</SheetTitle>
+                        <SheetDescription>
+                          This action cannot be undone. This will permanently
+                          delete your account and remove your data from our
+                          servers.
+                        </SheetDescription>
+                      </SheetHeader>
+                      <>
+                        <div className="grid w-full items-center gap-1.5 mt-2 mb-4">
+                          <SelectProject
+                            projects={projects}
+                            getProject={getProject}
+                          />
+
+                          <div className="my-2">
+                            <div className="flex items-center px-3 bg-white dark:bg-dark-800 rounded-md shadow-md border border-slate-300 dark:border-slate-700">
+                              <Popover
+                                open={openLabels}
+                                onOpenChange={setOpenLabels}
+                              >
+                                <PopoverTrigger asChild>
+                                  <button className="flex items-center text-light-500 bg-blue-700 font-mono font-medium tracking-wider leading-normal rounded sm:text-sm py-1 px-2 cursor-pointer">
+                                    <Tags className="mr-2 w-4 h-4" />
+                                    {card.label}
+                                  </button>
+                                </PopoverTrigger>
+                                <PopoverContent
+                                  className="p-0"
+                                  side="bottom"
+                                  align="start"
+                                >
+                                  <Command>
+                                    <CommandInput
+                                      placeholder="Filtrar etiqueta..."
+                                      autoFocus={true}
+                                    />
+                                    <CommandList>
+                                      <CommandEmpty>
+                                        No label found.
+                                      </CommandEmpty>
+                                      <CommandGroup>
+                                        {labels.map((label) => (
+                                          <CommandItem
+                                            key={label}
+                                            onSelect={(value) => {
+                                              setCard({
+                                                ...card,
+                                                label: value,
+                                              });
+                                              setOpenLabels(false);
+                                            }}
+                                          >
+                                            {label}
+                                          </CommandItem>
+                                        ))}
+                                      </CommandGroup>
+                                    </CommandList>
+                                  </Command>
+                                </PopoverContent>
+                              </Popover>
+
+                              <input
+                                type="text"
+                                className="w-full p-3 mx-3 focus:outline-none text-dark-500 bg-white dark:text-light-500 dark:bg-dark-800 leading-normal"
+                                name=""
+                                id=""
+                                placeholder="Title..."
+                                onChange={(e) => {
+                                  setCard({
+                                    ...card,
+                                    title: e.target.value,
+                                    createdAt: `${new Date()}`,
+                                  });
+                                }}
+                              />
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <Status getStatus={getStatus} />
+                            <Priority getPriority={getPriority} />
+                          </div>
+                          <div className="grid w-full gap-1.5 mb-4">
+                            <Label htmlFor="message">Description:</Label>
+                            <Textarea
+                              className="shadow-md"
+                              placeholder="Write a description..."
+                              id="message"
+                              onChange={(e) =>
+                                setCard({
+                                  ...card,
+                                  description: e.target.value,
+                                })
+                              }
+                            />
+                          </div>
+                          {/* <div className="flex justify-end">
                         <Button
                           type="submit"
                           variant={"uv"}
@@ -395,171 +405,178 @@ const Home = () => {
                           Create Card
                         </Button>
                       </div> */}
-                      </div>
-                    </>
-                    <SheetFooter>
-                      <div className="md:mb-0 mb-2 mr-auto">
-                        <span className="flex whitespace-pre font-mono font-medium text-sm py-2 px-3 bg-transparent text-dark-500 dark:text-light-500 border border-slate-300 dark:border-slate-700 rounded-md shadow-md">
-                          Created at: {date}
-                        </span>
-                      </div>
-                      <Button
-                        type="submit"
-                        variant={"uv"}
-                        disabled={handleCardDisable()}
-                      >
-                        Create Card
-                      </Button>
-                    </SheetFooter>
-                  </form>
-                </SheetContent>
-              </Sheet>
-            </div>
+                        </div>
+                      </>
+                      <SheetFooter>
+                        <div className="md:mb-0 mb-2 mr-auto">
+                          <span className="flex whitespace-pre font-mono font-medium text-sm py-2 px-3 bg-transparent text-dark-500 dark:text-light-500 border border-slate-300 dark:border-slate-700 rounded-md shadow-md">
+                            Created at: {date}
+                          </span>
+                        </div>
+                        <Button
+                          type="submit"
+                          variant={"uv"}
+                          disabled={handleCardDisable()}
+                        >
+                          Create Card
+                        </Button>
+                      </SheetFooter>
+                    </form>
+                  </SheetContent>
+                </Sheet>
+              </div>
 
-            <Tabs defaultValue="projects" className="w-full">
-              <TabsList className="shadow-md">
-                <TabsTrigger value="projects">Projects</TabsTrigger>
-                <TabsTrigger value="cards">Cards</TabsTrigger>
-                <TabsTrigger value="create">Create projects/cards</TabsTrigger>
-                <TabsTrigger value="teste">Debugger</TabsTrigger>
-              </TabsList>
-              <TabsContent
-                value="projects"
-                className="bg-transparent dark:bg-transparent border-0 px-1"
-              >
-                <>
-                  <section className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
-                    {/* {cards &&
+              <Tabs defaultValue="projects" className="w-full">
+                <TabsList className="shadow-md">
+                  <TabsTrigger value="projects">Projects</TabsTrigger>
+                  <TabsTrigger value="cards">Cards</TabsTrigger>
+                  <TabsTrigger value="create">
+                    Create projects/cards
+                  </TabsTrigger>
+                  <TabsTrigger value="teste">Debugger</TabsTrigger>
+                </TabsList>
+                <TabsContent
+                  value="projects"
+                  className="bg-transparent dark:bg-transparent border-0 px-1"
+                >
+                  <>
+                    <section className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
+                      {/* {cards &&
                     cards.length > 0 &&
                     cards.map((card: any) => (
                       <TaskCard key={card.id} card={card} />
                     ))} */}
 
-                    {cards && cards.length > 0 ? (
-                      cards.map((card: any) => (
-                        <TaskCard key={card.id} card={card} />
-                      ))
-                    ) : (
-                      <></>
-                    )}
+                      {cards && cards.length > 0 ? (
+                        cards.map((card: any) => (
+                          <TaskCard key={card.id} card={card} />
+                        ))
+                      ) : (
+                        <></>
+                      )}
 
-                    {/* <TaskCard /> */}
-                  </section>
-                </>
-                {/* <section className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
+                      {/* <TaskCard /> */}
+                    </section>
+                  </>
+                  {/* <section className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
                 {projects.length > 0 &&
                   projects.map((project: any) => (
                     <ProjectCard key={project.id} project={project} />
                   ))}
               </section> */}
-              </TabsContent>
-              <TabsContent
-                value="cards"
-                className="border-0 bg-transparent dark:bg-transparent px-1"
-              >
-                <>
-                  <section className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
-                    {cards &&
-                      cards.length > 0 &&
-                      cards.map((card: any) => (
-                        <TaskCard key={card.id} card={card} />
-                      ))}
-                  </section>
-                </>
-              </TabsContent>
-              <TabsContent value="create">
-                <h2 className="text-3xl font-bold">Create Project</h2>
-                <form onSubmit={handleSubmitProject}>
-                  <div className="grid w-full items-center gap-1 mt-2">
-                    <Label htmlFor="name-project">Project name:</Label>
-                    <Input
-                      type="text"
-                      id="name-project"
-                      className="shadow-md"
-                      placeholder="Project name..."
-                      onChange={(e) => {
-                        setProject({
-                          ...project,
-                          name: e.target.value,
-                          createdAt: `${new Date()}`,
-                        });
-                      }}
-                    />
-                    <p className="text-sm text-slate-500">
-                      Enter project name.
-                    </p>
-                  </div>
-                  <div className="grid w-full items-center gap-1 mt-2">
-                    <Label htmlFor="name-project">Logo:</Label>
-                    <Input
-                      type="text"
-                      id="name-project"
-                      className="shadow-md"
-                      placeholder="Project logo url here..."
-                      onChange={(e) => {
-                        setProject({ ...project, logo: e.target.value });
-                      }}
-                    />
-                    <p className="text-sm text-slate-500">
-                      It's optional. Only if you want.
-                    </p>
-                  </div>
-                  <div className="grid w-full gap-1 mt-2 mb-4">
-                    <Label htmlFor="message">Description:</Label>
-                    <Textarea
-                      className="shadow-md"
-                      placeholder="Write a description..."
-                      id="message"
-                      onChange={(e) => {
-                        setProject({ ...project, description: e.target.value });
-                      }}
-                    />
-                  </div>
-                  <div className="flex justify-end">
-                    <Button
-                      type="submit"
-                      variant={"uv"}
-                      disabled={handleDisable()}
-                    >
-                      Create Project
-                    </Button>
-                  </div>
-                </form>
-              </TabsContent>
-              <TabsContent value="teste">
-                <HoverCard>
-                  <HoverCardTrigger asChild>
-                    <Button variant="link">Teste</Button>
-                  </HoverCardTrigger>
-                  <HoverCardContent align="start">
-                    <div className="space-y-2">
-                      <h4 className="text-sm font-semibold">@nextjs</h4>
-                      <p className="text-sm">
-                        The React Framework – created and maintained by @vercel.
+                </TabsContent>
+                <TabsContent
+                  value="cards"
+                  className="border-0 bg-transparent dark:bg-transparent px-1"
+                >
+                  <>
+                    <section className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
+                      {cards &&
+                        cards.length > 0 &&
+                        cards.map((card: any) => (
+                          <TaskCard key={card.id} card={card} />
+                        ))}
+                    </section>
+                  </>
+                </TabsContent>
+                <TabsContent value="create">
+                  <h2 className="text-3xl font-bold">Create Project</h2>
+                  <form onSubmit={handleSubmitProject}>
+                    <div className="grid w-full items-center gap-1 mt-2">
+                      <Label htmlFor="name-project">Project name:</Label>
+                      <Input
+                        type="text"
+                        id="name-project"
+                        className="shadow-md"
+                        placeholder="Project name..."
+                        onChange={(e) => {
+                          setProject({
+                            ...project,
+                            name: e.target.value,
+                            createdAt: `${new Date()}`,
+                          });
+                        }}
+                      />
+                      <p className="text-sm text-slate-500">
+                        Enter project name.
                       </p>
                     </div>
-                  </HoverCardContent>
-                </HoverCard>
-                <pre className="text-xl text-dark-500 dark:text-light-500">
-                  {JSON.stringify(projects, undefined, 2)}
-                </pre>
-                <pre className="text-xl text-dark-500 dark:text-light-500">
-                  {JSON.stringify(cards, undefined, 2)}
-                </pre>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    toast({
-                      description: "Your message has been sent.",
-                    });
-                  }}
-                >
-                  Show Toast
-                </Button>
-              </TabsContent>
-            </Tabs>
-          </div>
-        </section>
+                    <div className="grid w-full items-center gap-1 mt-2">
+                      <Label htmlFor="name-project">Logo:</Label>
+                      <Input
+                        type="text"
+                        id="name-project"
+                        className="shadow-md"
+                        placeholder="Project logo url here..."
+                        onChange={(e) => {
+                          setProject({ ...project, logo: e.target.value });
+                        }}
+                      />
+                      <p className="text-sm text-slate-500">
+                        It's optional. Only if you want.
+                      </p>
+                    </div>
+                    <div className="grid w-full gap-1 mt-2 mb-4">
+                      <Label htmlFor="message">Description:</Label>
+                      <Textarea
+                        className="shadow-md"
+                        placeholder="Write a description..."
+                        id="message"
+                        onChange={(e) => {
+                          setProject({
+                            ...project,
+                            description: e.target.value,
+                          });
+                        }}
+                      />
+                    </div>
+                    <div className="flex justify-end">
+                      <Button
+                        type="submit"
+                        variant={"uv"}
+                        disabled={handleDisable()}
+                      >
+                        Create Project
+                      </Button>
+                    </div>
+                  </form>
+                </TabsContent>
+                <TabsContent value="teste">
+                  <HoverCard>
+                    <HoverCardTrigger asChild>
+                      <Button variant="link">Teste</Button>
+                    </HoverCardTrigger>
+                    <HoverCardContent align="start">
+                      <div className="space-y-2">
+                        <h4 className="text-sm font-semibold">@nextjs</h4>
+                        <p className="text-sm">
+                          The React Framework – created and maintained by
+                          @vercel.
+                        </p>
+                      </div>
+                    </HoverCardContent>
+                  </HoverCard>
+                  <pre className="text-xl text-dark-500 dark:text-light-500">
+                    {JSON.stringify(projects, undefined, 2)}
+                  </pre>
+                  <pre className="text-xl text-dark-500 dark:text-light-500">
+                    {JSON.stringify(cards, undefined, 2)}
+                  </pre>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      toast({
+                        description: "Your message has been sent.",
+                      });
+                    }}
+                  >
+                    Show Toast
+                  </Button>
+                </TabsContent>
+              </Tabs>
+            </div>
+          </section>
+        </CardContext.Provider>
       </ProjectContext.Provider>
     </>
   );

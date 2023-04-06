@@ -10,7 +10,7 @@ import { useContext, useEffect, useState } from "react";
 const ShowProject = ({ project_id }: { project_id: string }): JSX.Element => {
   const { projects } = useContext(ProjectContext);
   const [project, setProject] = useState<Project>();
-  console.log(projects);
+  // console.log(projects);
 
   useEffect(() => {
     if (project_id) {
