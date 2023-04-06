@@ -40,11 +40,11 @@ const App = ({ Component, pageProps }: AppProps) => {
         }
       `}</style>
       <ThemeProvider enableSystem={true} attribute="class">
-        {/* {isDevelopment && isSocket && <ClientReload />} */}
         <Layout>
           <Component {...pageProps} />
           <Toaster />
         </Layout>
+        {/* {isDevelopment && isSocket && <ClientReload />} */}
       </ThemeProvider>
     </>
   );

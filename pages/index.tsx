@@ -73,11 +73,11 @@ const Home = () => {
 
   const loadData = () => {
     if (typeof window !== "undefined") {
-      // const loadProjects = localStorage.getItem("projects");
+      const loadProjects = localStorage.getItem("projects");
       const loadCards = localStorage.getItem("cards");
 
       return {
-        // projects: loadProjects ? JSON.parse(loadProjects) : [],
+        projects: loadProjects ? JSON.parse(loadProjects) : [],
         cards: loadCards ? JSON.parse(loadCards) : [],
       };
     }
@@ -104,8 +104,7 @@ const Home = () => {
     updatedAt: "",
   };
 
-  const { projects, setProjects } = useContext(ProjectContext);
-  const [projs, setProjs] = useState([]);
+  const [projects, setProjects] = useState<Project[]>(loadData()?.projects);
   const [cards, setCards] = useState<Card[]>(loadData()?.cards);
 
   const [project, setProject] = useState<Project>({

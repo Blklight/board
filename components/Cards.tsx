@@ -47,7 +47,7 @@ const TaskCard = ({ card }: CardTaskProp): JSX.Element => {
         <ShowStatus status={card.status} />
       </button>
 
-      <div className="flex justify-between my-2">
+      <div className="flex justify-between my-3">
         <span className="inline-flex items-center text-light-500 bg-blue-700 font-mono font-medium tracking-wider leading-normal rounded sm:text-sm py-1 px-2">
           <Tags className="mr-2 w-4 h-4" />
           {card.label}
@@ -67,20 +67,6 @@ const TaskCard = ({ card }: CardTaskProp): JSX.Element => {
           <p>{card.description}</p>
         </>
       )}
-      {/* <p>{card.project_id}</p> */}
-      <Popover>
-        <PopoverTrigger>Open</PopoverTrigger>
-        <PopoverContent align="start">
-          <div className="flex items-center">
-            <img
-              src="https://i.imgur.com/KMN1KQ5.jpg"
-              className="w-12 h-12 object-cover rounded-full"
-              alt=""
-            />
-            <div className="">Place content for the popover here.</div>
-          </div>
-        </PopoverContent>
-      </Popover>
 
       <div className="flex my-3">
         <span className="flex whitespace-pre font-mono font-medium text-sm py-1 px-2 bg-transparent text-dark-500 dark:text-light-500 border border-slate-300 dark:border-slate-700 rounded">
@@ -90,53 +76,14 @@ const TaskCard = ({ card }: CardTaskProp): JSX.Element => {
           </span>
         </span>
       </div>
-      {/* <div className="absolute -bottom-4 cursor-pointer">
+
+      <div className="absolute -bottom-4 right-4 cursor-pointer">
         <span
-          className={`inline-flex items-center px-2 py-1 rounded bg-light-500 dark:bg-dark-500 border ${border?.card}`}
+          className={`inline-flex items-center px-2 py-1 font-medium rounded bg-light-500 dark:bg-dark-400 border ${border?.card}`}
         >
-          {card.project_id}
+          <ShowProject project_id={card.project_id} />
         </span>
-      </div> */}
-      <Popover>
-        <PopoverTrigger asChild>
-          <div className="absolute -bottom-4 cursor-pointer">
-            <span
-              className={`inline-flex items-center px-2 py-1 rounded bg-light-500 dark:bg-dark-400 border ${border?.card}`}
-            >
-              <ShowProject project_id={card.project_id} />
-            </span>
-          </div>
-        </PopoverTrigger>
-        <PopoverContent align="start">
-          <div className="flex items-center">
-            <img
-              src="https://i.imgur.com/KMN1KQ5.jpg"
-              className="w-12 h-12 object-cover rounded-full"
-              alt=""
-            />
-            <div className="">Place content for the popover here.</div>
-          </div>
-        </PopoverContent>
-      </Popover>
-      {/* <HoverCard>
-        <HoverCardTrigger asChild>
-          <div className="absolute -bottom-4 cursor-pointer">
-            <span
-              className={`inline-flex items-center px-2 py-1 rounded bg-light-500 dark:bg-dark-400 border ${border?.card}`}
-            >
-              Project: {card.project_id}
-            </span>
-          </div>
-        </HoverCardTrigger>
-        <HoverCardContent align="start" asChild>
-          <div className="space-y-2">
-            <h4 className="text-sm font-semibold">@nextjs</h4>
-            <p className="text-sm">
-              The React Framework – created and maintained by @vercel.
-            </p>
-          </div>
-        </HoverCardContent>
-      </HoverCard> */}
+      </div>
     </article>
   ) : (
     <article
