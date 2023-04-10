@@ -204,6 +204,21 @@ const Home = () => {
     setCard({ ...card, priority: priority });
   };
 
+  const updateCardStatus = (updatedCard: Card) => {
+    setCards((current) =>
+      current.map((obj) => {
+        if (obj.id === updatedCard.id) {
+          return {
+            ...obj,
+            status: updatedCard.status,
+            updatedAt: updatedCard.updatedAt,
+          };
+        }
+        return obj;
+      })
+    );
+  };
+
   // console.log("Line 175:", project);
   const date = format(new Date(), "dd'/'M'/'yyyy, HH:mm");
   return (
@@ -449,7 +464,11 @@ const Home = () => {
 
                       {cards && cards.length > 0 ? (
                         cards.map((card: any) => (
-                          <TaskCard key={card.id} card={card} />
+                          <TaskCard
+                            key={card.id}
+                            card={card}
+                            updateStatus={updateCardStatus}
+                          />
                         ))
                       ) : (
                         <></>

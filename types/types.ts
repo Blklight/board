@@ -40,6 +40,7 @@ export type Status = {
 
 export type CardTaskProp = {
   card: Card;
+  updateStatus: any;
 };
 
 export type ProjectCardProp = {

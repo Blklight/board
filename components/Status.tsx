@@ -99,37 +99,37 @@ const ShowStatus = ({ status = "backlog" }: any) => {
   );
 };
 
-const StatusCardSelector = ({ card = {}, status = "backlog" }: any) => {
+const StatusCardSelector = ({ status = "backlog", getStatus }: any) => {
   const [open, setOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState<Status | null>((): any =>
     statuses.find((obj) => obj.value === status)
   );
-  const [updateCard, setUpdateCard] = useState<Card>({ ...card });
+  // const [updateCard, setUpdateCard] = useState<Card>({ ...card });
   const { cards, setCards } = useContext(CardContext);
   // console.log(card);
 
-  console.log("Selected Status:", selectedStatus);
+  // console.log("Selected Status:", selectedStatus);
 
-  const updateStatusCard = (updateStatus: any) => {
-    console.log(updateStatus, updateCard);
-    debugger;
-    if (selectedStatus) {
-      setUpdateCard({
-        ...updateCard,
-        status: updateStatus?.value,
-        updatedAt: `${new Date()}`,
-      });
-      const cardToUpdate = cards.findIndex((obj) => obj.id == updateCard.id);
-      console.log(cardToUpdate);
-      debugger;
-      cards[cardToUpdate] = {
-        ...updateCard,
-      };
-      console.log(cards[cardToUpdate]);
-      setCards([...cards]);
-      debugger;
-    }
-  };
+  // const updateStatusCard = (updateStatus: any) => {
+  //   console.log(updateStatus, updateCard);
+  //   debugger;
+  //   if (selectedStatus) {
+  //     setUpdateCard({
+  //       ...updateCard,
+  //       status: updateStatus?.value,
+  //       updatedAt: `${new Date()}`,
+  //     });
+  //     const cardToUpdate = cards.findIndex((obj) => obj.id == updateCard.id);
+  //     console.log(cardToUpdate);
+  //     debugger;
+  //     cards[cardToUpdate] = {
+  //       ...updateCard,
+  //     };
+  //     console.log(cards[cardToUpdate]);
+  //     setCards([...cards]);
+  //     debugger;
+  //   }
+  // };
 
   return (
     selectedStatus && (
@@ -157,7 +157,7 @@ const StatusCardSelector = ({ card = {}, status = "backlog" }: any) => {
                         statuses.find((item) => item.value === label) || null
                       );
                       setOpen(false);
-                      updateStatusCard(selectedStatus);
+                      getStatus(status.value);
                     }}
                   >
                     <status.icon

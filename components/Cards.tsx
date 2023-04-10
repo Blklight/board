@@ -6,6 +6,13 @@ import { CardTaskProp, ProjectCardProp } from "@/types/types";
 
 import { Button } from "@/components/ui/button";
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+
+import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
@@ -21,22 +28,35 @@ import { ShowProject } from "@/components/Projects";
 import { StatusCardSelector } from "@/components/Status";
 import { ShowPriority } from "@/components/Priority";
 import { statuses } from "@/lib/data";
-import { Tags } from "lucide-react";
+import { Tags, Trash, Edit, MoreVertical } from "lucide-react";
 
-const TaskCard = ({ card }: CardTaskProp): JSX.Element => {
+const TaskCard = ({ card, updateStatus }: CardTaskProp): JSX.Element => {
   const { toast } = useToast();
   const [border, setBorder] = useState({} as any);
+  const [option, setOption] = useState({} as any);
 
   useEffect(() => {
     setBorder(statuses.find((obj) => obj.value === card.status));
+    setOption(statuses.find((obj) => obj.value === card.status));
   }, [card]);
+
+  useEffect(() => {});
+
+  const getStatus = (status: string) => {
+    const updateCard = {
+      ...card,
+      status: status,
+      updatedAt: `${new Date()}`,
+    };
+    updateStatus(updateCard);
+  };
 
   return card ? (
     <article
-      className={`glass dark:text-light-500 border p-4 rounded-lg relative shadow-lg my-2 ${border?.card}`}
+      className={`glass dark:text-light-500 border p-4 rounded-lg relative shadow-lg my-3 ${border?.card}`}
     >
       <button
-        className="absolute -top-4 cursor-pointer"
+        className="absolute -top-5 cursor-pointer"
         onClick={() =>
           toast({
             title: `${card.title}`,
@@ -44,7 +64,13 @@ const TaskCard = ({ card }: CardTaskProp): JSX.Element => {
           })
         }
       >
-        <StatusCardSelector status={card.status} card={card} />
+        <StatusCardSelector status={card.status} getStatus={getStatus} />
+      </button>
+
+      <button
+        className={`absolute -top-4 right-4 cursor-pointer flex items-center p-1 font-medium rounded ${border?.style}`}
+      >
+        <MoreVertical className="h-5 w-5" />
       </button>
 
       <div className="flex justify-between my-3">
@@ -68,14 +94,32 @@ const TaskCard = ({ card }: CardTaskProp): JSX.Element => {
         </>
       )}
 
-      <div className="flex my-3">
-        <span className="flex whitespace-pre font-mono font-medium text-sm py-1 px-2 bg-transparent text-dark-500 dark:text-light-500 border border-slate-300 dark:border-slate-700 rounded">
+      <div className="lg:flex block lg:gap-2 my-2">
+        <span className="flex flex-1 my-1 justify-center whitespace-pre font-mono font-medium text-sm py-1 px-2 bg-transparent text-dark-500 dark:text-light-500 border border-dark-200 dark:border-light-600 rounded">
           Created at:
           <span>
             {format(new Date(card.createdAt), "dd'/'M'/'yyyy, HH:mm")}
           </span>
         </span>
+        <span className="flex flex-1 my-1 justify-center whitespace-pre font-mono font-medium text-sm py-1 px-2 bg-transparent text-dark-500 dark:text-light-500 border border-dark-200 dark:border-light-600 rounded">
+          Updated at:
+          <span>
+            {card.updatedAt ? (
+              format(new Date(card.updatedAt), "dd'/'M'/'yyyy, HH:mm")
+            ) : (
+              <>--/--/----, --:--</>
+            )}
+          </span>
+        </span>
       </div>
+      {/* <div className="flex gap-2 justify-end my-2">
+        <button className="flex items-center py-1 px-2 font-medium rounded bg-yellow-500 text-dark-500">
+          <Edit className="mr-2 w-4 h-4" /> Edit
+        </button>
+        <button className="flex items-center py-1 px-2 font-medium rounded bg-red-500 text-light-500">
+          <Trash className="mr-2 w-4 h-4" /> Delete
+        </button>
+      </div> */}
 
       <div className="absolute -bottom-4 right-4 cursor-pointer">
         <span
