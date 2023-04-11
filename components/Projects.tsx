@@ -25,7 +25,7 @@ const ShowProject = ({ project_id }: { project_id: string }): JSX.Element => {
         <PopoverTrigger asChild>
           <span>{project?.name}</span>
         </PopoverTrigger>
-        <PopoverContent align="end" alignOffset={-6} sideOffset={8}>
+        <PopoverContent align="center" alignOffset={-6} sideOffset={8}>
           <div className="flex">
             <img
               src={project?.logo ? project?.logo : "/images/blklight-thumb.jpg"}

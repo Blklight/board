@@ -5,23 +5,15 @@ import { useToast } from "@/hooks/ui/use-toast";
 import { CardTaskProp, ProjectCardProp } from "@/types/types";
 
 import { Button } from "@/components/ui/button";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 
 import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 import { ShowProject } from "@/components/Projects";
 
@@ -30,14 +22,16 @@ import { ShowPriority } from "@/components/Priority";
 import { statuses } from "@/lib/data";
 import { Tags, Trash, Edit, MoreVertical } from "lucide-react";
 
-const TaskCard = ({ card, updateStatus }: CardTaskProp): JSX.Element => {
+const TaskCard = ({
+  card,
+  updateStatus,
+  deleteCard,
+}: CardTaskProp): JSX.Element => {
   const { toast } = useToast();
-  const [border, setBorder] = useState({} as any);
-  const [option, setOption] = useState({} as any);
+  const [styling, setStyling] = useState({} as any);
 
   useEffect(() => {
-    setBorder(statuses.find((obj) => obj.value === card.status));
-    setOption(statuses.find((obj) => obj.value === card.status));
+    setStyling(statuses.find((obj) => obj.value === card.status));
   }, [card]);
 
   useEffect(() => {});
@@ -53,7 +47,7 @@ const TaskCard = ({ card, updateStatus }: CardTaskProp): JSX.Element => {
 
   return card ? (
     <article
-      className={`glass dark:text-light-500 border p-4 rounded-lg relative shadow-lg my-3 ${border?.card}`}
+      className={`glass dark:dark-glass dark:text-light-500 border p-5 rounded-lg relative shadow-lg my-3 ${styling?.card}`}
     >
       <button
         className="absolute -top-5 cursor-pointer"
@@ -67,11 +61,31 @@ const TaskCard = ({ card, updateStatus }: CardTaskProp): JSX.Element => {
         <StatusCardSelector status={card.status} getStatus={getStatus} />
       </button>
 
-      <button
-        className={`absolute -top-4 right-4 cursor-pointer flex items-center p-1 font-medium rounded ${border?.style}`}
-      >
-        <MoreVertical className="h-5 w-5" />
-      </button>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button
+            className={`absolute -top-4 right-4 cursor-pointer flex items-center p-1 font-medium rounded ${styling?.style}`}
+          >
+            <MoreVertical className="h-5 w-5" />
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          className="glass dark:dark-glass !rounded-md"
+          align="end"
+        >
+          <DropdownMenuLabel>Options</DropdownMenuLabel>
+          <DropdownMenuSeparator className="bg-light-500 dark:bg-dark-500" />
+          <DropdownMenuItem className="rounded">
+            <Edit className="mr-2 w-4 h-4" /> Edit
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className="rounded"
+            onClick={() => deleteCard(card.id)}
+          >
+            <Trash className="mr-2 w-4 h-4" /> Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
 
       <div className="flex justify-between my-3">
         <span className="inline-flex items-center text-light-500 bg-blue-700 font-mono font-medium tracking-wider leading-normal rounded sm:text-sm py-1 px-2">
@@ -94,14 +108,14 @@ const TaskCard = ({ card, updateStatus }: CardTaskProp): JSX.Element => {
         </>
       )}
 
-      <div className="lg:flex block lg:gap-2 my-2">
-        <span className="flex flex-1 my-1 justify-center whitespace-pre font-mono font-medium text-sm py-1 px-2 bg-transparent text-dark-500 dark:text-light-500 border border-dark-200 dark:border-light-600 rounded">
+      <div className="lg:flex block lg:gap-2 justify-between my-2">
+        <span className="flex my-1 justify-center whitespace-pre font-mono font-medium text-sm py-1 px-2 bg-transparent text-dark-500 dark:text-light-500 border border-dark-200 dark:border-light-600 rounded">
           Created at:
           <span>
             {format(new Date(card.createdAt), "dd'/'M'/'yyyy, HH:mm")}
           </span>
         </span>
-        <span className="flex flex-1 my-1 justify-center whitespace-pre font-mono font-medium text-sm py-1 px-2 bg-transparent text-dark-500 dark:text-light-500 border border-dark-200 dark:border-light-600 rounded">
+        <span className="flex my-1 justify-center whitespace-pre font-mono font-medium text-sm py-1 px-2 bg-transparent text-dark-500 dark:text-light-500 border border-dark-200 dark:border-light-600 rounded">
           Updated at:
           <span>
             {card.updatedAt ? (
@@ -121,9 +135,9 @@ const TaskCard = ({ card, updateStatus }: CardTaskProp): JSX.Element => {
         </button>
       </div> */}
 
-      <div className="absolute -bottom-4 right-4 cursor-pointer">
+      <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 cursor-pointer">
         <span
-          className={`inline-flex items-center px-2 py-1 font-medium rounded bg-light-500 dark:bg-dark-400 border ${border?.card}`}
+          className={`inline-flex items-center px-2 py-1 font-medium rounded bg-light-500 dark:bg-dark-400 border ${styling?.card}`}
         >
           <ShowProject project_id={card.project_id} />
         </span>

@@ -58,6 +58,19 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
 import { TaskCard } from "@/components/Cards";
 
 import { Card, Project } from "@/types/types";
@@ -115,6 +128,7 @@ const Home = () => {
   const [open, setOpen] = useState(false);
   const [openLabels, setOpenLabels] = useState(false);
   const [openSheet, setOpenSheet] = useState(false);
+  const [alertOpen, setAlertOpen] = useState(false);
 
   const waitDialog = () => new Promise((resolve) => setTimeout(resolve, 200));
 
@@ -217,6 +231,13 @@ const Home = () => {
         return obj;
       })
     );
+  };
+
+  const deleteCard = (cardId: string) => {
+    if (cardId) {
+      setAlertOpen(true);
+      console.log(cards.find((obj) => obj.id === cardId));
+    }
   };
 
   // console.log("Line 175:", project);
@@ -439,6 +460,26 @@ const Home = () => {
                     </form>
                   </SheetContent>
                 </Sheet>
+
+                <AlertDialog open={alertOpen} onOpenChange={setAlertOpen}>
+                  <AlertDialogTrigger>Open</AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Are you sure absolutely sure?
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently
+                        delete your account and remove your data from our
+                        servers.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction>Continue</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
 
               <Tabs defaultValue="projects" className="w-full">
@@ -456,46 +497,27 @@ const Home = () => {
                 >
                   <>
                     <section className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
-                      {/* {cards &&
-                    cards.length > 0 &&
-                    cards.map((card: any) => (
-                      <TaskCard key={card.id} card={card} />
-                    ))} */}
-
                       {cards && cards.length > 0 ? (
                         cards.map((card: any) => (
                           <TaskCard
                             key={card.id}
                             card={card}
                             updateStatus={updateCardStatus}
+                            deleteCard={deleteCard}
                           />
                         ))
                       ) : (
                         <></>
                       )}
-
-                      {/* <TaskCard /> */}
                     </section>
                   </>
-                  {/* <section className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
-                {projects.length > 0 &&
-                  projects.map((project: any) => (
-                    <ProjectCard key={project.id} project={project} />
-                  ))}
-              </section> */}
                 </TabsContent>
                 <TabsContent
                   value="cards"
                   className="border-0 bg-transparent dark:bg-transparent px-1"
                 >
                   <>
-                    <section className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
-                      {cards &&
-                        cards.length > 0 &&
-                        cards.map((card: any) => (
-                          <TaskCard key={card.id} card={card} />
-                        ))}
-                    </section>
+                    <section className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4"></section>
                   </>
                 </TabsContent>
                 <TabsContent value="create">
