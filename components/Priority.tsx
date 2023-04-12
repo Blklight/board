@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Signal } from "lucide-react";
 
 import { cn } from "@/lib/utilities";
@@ -21,11 +21,19 @@ import {
 import { priorities } from "@/lib/data";
 import { Priority } from "@/types/types";
 
-const Priority = ({ getPriority }: any) => {
+const Priority = ({ getPriority, value }: any) => {
   const [open, setOpen] = useState(false);
   const [selectedPriority, setSelectedPriority] = useState<Priority | null>(
     null
   );
+
+  useEffect(() => {
+    if (value) {
+      const findPriority =
+        priorities.find((obj) => obj.value === value) || null;
+      setSelectedPriority(findPriority);
+    }
+  }, [value]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

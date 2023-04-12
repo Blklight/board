@@ -54,12 +54,6 @@ import {
 } from "@/components/ui/dialog";
 
 import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
-
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -71,7 +65,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-import { TaskCard } from "@/components/Cards";
+import { InfoCard, TaskCard } from "@/components/Cards";
 
 import { Card, Project } from "@/types/types";
 
@@ -117,20 +111,22 @@ const Home = () => {
     updatedAt: "",
   };
 
-  const [projects, setProjects] = useState<Project[]>(loadData()?.projects);
-  const [cards, setCards] = useState<Card[]>(loadData()?.cards);
-
   const [project, setProject] = useState<Project>({
     ...initialStateProject,
   });
   const [card, setCard] = useState<Card>({ ...initialStateCard });
+  const [projects, setProjects] = useState<Project[]>(loadData()?.projects);
+  const [cards, setCards] = useState<Card[]>(loadData()?.cards);
+  const [cardToDelete, setCardToDelete] = useState<Card | null>(null);
+  const [cardToEdit, setCardToEdit] = useState<Card | null>(null);
 
+  const [isEdit, setIsEdit] = useState(false);
   const [open, setOpen] = useState(false);
   const [openLabels, setOpenLabels] = useState(false);
   const [openSheet, setOpenSheet] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
 
-  const waitDialog = () => new Promise((resolve) => setTimeout(resolve, 200));
+  const waitDialog = () => new Promise((resolve) => setTimeout(resolve, 100));
 
   const handleDisable = () => {
     return project.name === "" ? true : false;
@@ -142,7 +138,6 @@ const Home = () => {
 
   const handleSubmitProject = (e: any) => {
     e.preventDefault();
-
     let isDone = false;
     if (project.name) {
       if (
@@ -170,7 +165,6 @@ const Home = () => {
 
   const handleSubmitCard = (e: any) => {
     e.preventDefault();
-    // setCard({ ...card, updatedAt: `${new Date()}` });
     let isDone = false;
     const alreadyExistsCard = cards.find(
       (obj) => obj.title === card.title && obj.label === card.label
@@ -183,15 +177,35 @@ const Home = () => {
           description: `Already exists a card labeled as ${card.label} and with ${card.title}, we recommend that you change the label!`,
         });
       }
-      setCards([...cards, card]);
+
+      if (isEdit) {
+        setCards((current) =>
+          current.map((obj) => {
+            if (obj.id === card.id) {
+              return {
+                ...card,
+                updatedAt: `${new Date()}`,
+              };
+            }
+            return obj;
+          })
+        );
+      } else {
+        setCards([...cards, card]);
+      }
       isDone = true;
     }
 
     if (isDone) {
+      if (isEdit) {
+        setIsEdit(false);
+      }
       setCard(initialStateCard);
       waitDialog().then(() => setOpenSheet(false));
       return toast({
-        title: "Card registered successfully!",
+        title: isEdit
+          ? "Card updated successfully!"
+          : "Card registered successfully!",
       });
     }
   };
@@ -233,15 +247,56 @@ const Home = () => {
     );
   };
 
-  const deleteCard = (cardId: string) => {
+  const setDeleteCard = (cardId: string) => {
     if (cardId) {
-      setAlertOpen(true);
-      console.log(cards.find((obj) => obj.id === cardId));
+      const card = cards.find((obj) => obj.id === cardId);
+      if (card) {
+        setCardToDelete(card);
+        setAlertOpen(true);
+        console.log(cards.find((obj) => obj.id === cardId));
+      }
     }
   };
 
-  // console.log("Line 175:", project);
-  const date = format(new Date(), "dd'/'M'/'yyyy, HH:mm");
+  const setEditCard = (cardId: string) => {
+    if (cardId) {
+      const card = cards.find((obj) => obj.id === cardId);
+      if (card) {
+        setIsEdit(true);
+        setCard(card);
+        setOpenSheet(true);
+        // console.log(cards.find((obj) => obj.id === cardId));
+      }
+    }
+  };
+
+  const deleteCard = () => {
+    if (cardToDelete) {
+      setCards((current) =>
+        current.filter((obj) => {
+          return obj.id !== cardToDelete.id;
+        })
+      );
+    }
+    waitDialog().then(() => setAlertOpen(false));
+    setCardToDelete(null);
+  };
+
+  const cancelDelete = () => {
+    waitDialog().then(() => setAlertOpen(false));
+    setCardToDelete(null);
+  };
+
+  const DeleteItemView = ({ isCard }: { isCard: boolean }) => {
+    return isCard ? (
+      <>
+        <InfoCard card={cardToDelete} />
+      </>
+    ) : (
+      <> </>
+    );
+  };
+
   return (
     <>
       <ProjectContext.Provider value={{ projects, setProjects }}>
@@ -349,6 +404,7 @@ const Home = () => {
                           <SelectProject
                             projects={projects}
                             getProject={getProject}
+                            value={isEdit ? card.project_id : null}
                           />
 
                           <div className="my-2">
@@ -411,12 +467,19 @@ const Home = () => {
                                     createdAt: `${new Date()}`,
                                   });
                                 }}
+                                value={isEdit ? card.title : ""}
                               />
                             </div>
                           </div>
                           <div className="flex gap-2">
-                            <Status getStatus={getStatus} />
-                            <Priority getPriority={getPriority} />
+                            <Status
+                              getStatus={getStatus}
+                              value={isEdit ? card.status : null}
+                            />
+                            <Priority
+                              getPriority={getPriority}
+                              value={isEdit ? card.priority : null}
+                            />
                           </div>
                           <div className="grid w-full gap-1.5 mb-4">
                             <Label htmlFor="message">Description:</Label>
@@ -430,31 +493,18 @@ const Home = () => {
                                   description: e.target.value,
                                 })
                               }
+                              value={isEdit ? card.description : ""}
                             />
                           </div>
-                          {/* <div className="flex justify-end">
-                        <Button
-                          type="submit"
-                          variant={"uv"}
-                          disabled={handleCardDisable()}
-                        >
-                          Create Card
-                        </Button>
-                      </div> */}
                         </div>
                       </>
                       <SheetFooter>
-                        <div className="md:mb-0 mb-2 mr-auto">
-                          <span className="flex whitespace-pre font-mono font-medium text-sm py-2 px-3 bg-transparent text-dark-500 dark:text-light-500 border border-slate-300 dark:border-slate-700 rounded-md shadow-md">
-                            Created at: {date}
-                          </span>
-                        </div>
                         <Button
                           type="submit"
                           variant={"uv"}
                           disabled={handleCardDisable()}
                         >
-                          Create Card
+                          {isEdit ? "Update Card" : "Create Card"}
                         </Button>
                       </SheetFooter>
                     </form>
@@ -462,21 +512,23 @@ const Home = () => {
                 </Sheet>
 
                 <AlertDialog open={alertOpen} onOpenChange={setAlertOpen}>
-                  <AlertDialogTrigger>Open</AlertDialogTrigger>
-                  <AlertDialogContent>
+                  {/* <AlertDialogTrigger>Open</AlertDialogTrigger> */}
+                  <AlertDialogContent className="dark:!dark-glass">
                     <AlertDialogHeader>
                       <AlertDialogTitle>
                         Are you sure absolutely sure?
                       </AlertDialogTitle>
                       <AlertDialogDescription>
-                        This action cannot be undone. This will permanently
-                        delete your account and remove your data from our
-                        servers.
+                        <DeleteItemView isCard />
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction>Continue</AlertDialogAction>
+                      <AlertDialogCancel onClick={cancelDelete}>
+                        Cancel
+                      </AlertDialogCancel>
+                      <AlertDialogAction onClick={deleteCard}>
+                        Delete Card
+                      </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
@@ -503,7 +555,8 @@ const Home = () => {
                             key={card.id}
                             card={card}
                             updateStatus={updateCardStatus}
-                            deleteCard={deleteCard}
+                            deleteCard={setDeleteCard}
+                            editCard={setEditCard}
                           />
                         ))
                       ) : (
@@ -520,100 +573,8 @@ const Home = () => {
                     <section className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4"></section>
                   </>
                 </TabsContent>
-                <TabsContent value="create">
-                  <h2 className="text-3xl font-bold">Create Project</h2>
-                  <form onSubmit={handleSubmitProject}>
-                    <div className="grid w-full items-center gap-1 mt-2">
-                      <Label htmlFor="name-project">Project name:</Label>
-                      <Input
-                        type="text"
-                        id="name-project"
-                        className="shadow-md"
-                        placeholder="Project name..."
-                        onChange={(e) => {
-                          setProject({
-                            ...project,
-                            name: e.target.value,
-                            createdAt: `${new Date()}`,
-                          });
-                        }}
-                      />
-                      <p className="text-sm text-slate-500">
-                        Enter project name.
-                      </p>
-                    </div>
-                    <div className="grid w-full items-center gap-1 mt-2">
-                      <Label htmlFor="name-project">Logo:</Label>
-                      <Input
-                        type="text"
-                        id="name-project"
-                        className="shadow-md"
-                        placeholder="Project logo url here..."
-                        onChange={(e) => {
-                          setProject({ ...project, logo: e.target.value });
-                        }}
-                      />
-                      <p className="text-sm text-slate-500">
-                        It's optional. Only if you want.
-                      </p>
-                    </div>
-                    <div className="grid w-full gap-1 mt-2 mb-4">
-                      <Label htmlFor="message">Description:</Label>
-                      <Textarea
-                        className="shadow-md"
-                        placeholder="Write a description..."
-                        id="message"
-                        onChange={(e) => {
-                          setProject({
-                            ...project,
-                            description: e.target.value,
-                          });
-                        }}
-                      />
-                    </div>
-                    <div className="flex justify-end">
-                      <Button
-                        type="submit"
-                        variant={"uv"}
-                        disabled={handleDisable()}
-                      >
-                        Create Project
-                      </Button>
-                    </div>
-                  </form>
-                </TabsContent>
-                <TabsContent value="teste">
-                  <HoverCard>
-                    <HoverCardTrigger asChild>
-                      <Button variant="link">Teste</Button>
-                    </HoverCardTrigger>
-                    <HoverCardContent align="start">
-                      <div className="space-y-2">
-                        <h4 className="text-sm font-semibold">@nextjs</h4>
-                        <p className="text-sm">
-                          The React Framework – created and maintained by
-                          @vercel.
-                        </p>
-                      </div>
-                    </HoverCardContent>
-                  </HoverCard>
-                  <pre className="text-xl text-dark-500 dark:text-light-500">
-                    {JSON.stringify(projects, undefined, 2)}
-                  </pre>
-                  <pre className="text-xl text-dark-500 dark:text-light-500">
-                    {JSON.stringify(cards, undefined, 2)}
-                  </pre>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      toast({
-                        description: "Your message has been sent.",
-                      });
-                    }}
-                  >
-                    Show Toast
-                  </Button>
-                </TabsContent>
+                <TabsContent value="create"></TabsContent>
+                <TabsContent value="teste"></TabsContent>
               </Tabs>
             </div>
           </section>

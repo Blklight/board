@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { format } from "date-fns";
 
 import { Check, ChevronDown, PlusCircle } from "lucide-react";
@@ -23,10 +23,17 @@ import { statuses } from "@/lib/data";
 import { Card, Status } from "@/types/types";
 import { ProjectContext, CardContext } from "@/contexts/contexts";
 
-const Status = ({ getStatus }: any) => {
+const Status = ({ getStatus, value }: any) => {
   const [open, setOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState<Status | null>(null);
-  // console.log("Selected Status:", selectedStatus);
+
+  useEffect(() => {
+    if (value) {
+      const findStatus = statuses.find((obj) => obj.value === value) || null;
+      setSelectedStatus(findStatus);
+    }
+  }, [value]);
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>

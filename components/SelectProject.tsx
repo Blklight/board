@@ -1,15 +1,6 @@
-import { useState } from "react";
-import {
-  PlusCircle,
-  ArrowUpCircle,
-  CheckCircle2,
-  Circle,
-  HelpCircle,
-  LucideIcon,
-  XCircle,
-} from "lucide-react";
+import { useEffect, useState } from "react";
+import { PlusCircle } from "lucide-react";
 
-import { cn } from "@/lib/utilities";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -26,28 +17,19 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-interface Board {
-  id: String;
-  title: String;
-  description: String;
-  status: String;
-  label: String;
-  priority: Number;
-  createdAt: String;
-  updatedAt: String;
-}
+import { Project } from "@/types/types";
 
-interface Project {
-  id: String;
-  name: String;
-  createdAt: String;
-  updatedAt: null;
-  boards?: Array<Board>;
-}
-
-const SelectProject = ({ projects, getProject }: any) => {
+const SelectProject = ({ projects, getProject, value }: any) => {
   const [open, setOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+
+  useEffect(() => {
+    if (value) {
+      const findProject =
+        projects.find((obj: Project) => obj.id === value) || null;
+      setSelectedProject(findProject);
+    }
+  }, [value, projects]);
 
   const items = projects.map((project: any) => {
     return {
