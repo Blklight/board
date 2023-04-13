@@ -4,6 +4,7 @@ import { ProjectContext, CardContext } from "@/contexts/contexts";
 
 import { v4 as uuid } from "uuid";
 import { format } from "date-fns";
+import { useForm, Controller } from "react-hook-form";
 
 import { PageSEO } from "@/components/SEO";
 import siteMetadata from "@/content/siteMetadata";
@@ -69,6 +70,15 @@ import { InfoCard, TaskCard } from "@/components/Cards";
 
 import { Card, Project } from "@/types/types";
 
+type InputCards = {
+  title: string;
+  description: string;
+  project_id: string;
+  status: string;
+  priority: string;
+  label: string;
+};
+
 interface HomeProp {
   documents: Array<object>;
   initialDisplayDocuments: any;
@@ -77,7 +87,15 @@ interface HomeProp {
 
 const Home = () => {
   const { toast } = useToast();
-
+  const { register, handleSubmit, control } = useForm({
+    defaultValues: {
+      title: "",
+      description: "",
+      status: "backlog",
+      label: "feature",
+      priority: "medium",
+    },
+  });
   const loadData = () => {
     if (typeof window !== "undefined") {
       const loadProjects = localStorage.getItem("projects");
@@ -115,8 +133,8 @@ const Home = () => {
     ...initialStateProject,
   });
   const [card, setCard] = useState<Card>({ ...initialStateCard });
-  const [projects, setProjects] = useState<Project[]>(loadData()?.projects);
-  const [cards, setCards] = useState<Card[]>(loadData()?.cards);
+  const [projects, setProjects] = useState<Project[] | null>(null);
+  const [cards, setCards] = useState<Card[] | null>(null);
   const [cardToDelete, setCardToDelete] = useState<Card | null>(null);
   const [cardToEdit, setCardToEdit] = useState<Card | null>(null);
 
@@ -166,29 +184,33 @@ const Home = () => {
   const handleSubmitCard = (e: any) => {
     e.preventDefault();
     let isDone = false;
-    const alreadyExistsCard = cards.find(
-      (obj) => obj.title === card.title && obj.label === card.label
-    );
+    const alreadyExistsCard =
+      cards &&
+      cards.find((obj) => obj.title === card.title && obj.label === card.label);
 
     if (card.title) {
-      if (alreadyExistsCard) {
-        return toast({
-          title: "Repeated title and label",
-          description: `Already exists a card labeled as ${card.label} and with ${card.title}, we recommend that you change the label!`,
-        });
+      if (!isEdit) {
+        if (alreadyExistsCard) {
+          return toast({
+            title: "Repeated title and label",
+            description: `Already exists a card labeled as ${card.label} and with ${card.title}, we recommend that you change the label!`,
+          });
+        }
       }
 
       if (isEdit) {
-        setCards((current) =>
-          current.map((obj) => {
-            if (obj.id === card.id) {
-              return {
-                ...card,
-                updatedAt: `${new Date()}`,
-              };
-            }
-            return obj;
-          })
+        setCards(
+          (current) =>
+            current &&
+            current.map((obj) => {
+              if (obj.id === card.id) {
+                return {
+                  ...card,
+                  updatedAt: `${new Date()}`,
+                };
+              }
+              return obj;
+            })
         );
       } else {
         setCards([...cards, card]);
@@ -209,6 +231,11 @@ const Home = () => {
       });
     }
   };
+
+  useEffect(() => {
+    setProjects(loadData()?.projects);
+    setCards(loadData()?.cards);
+  }, []);
 
   useEffect(() => {
     if (projects) {
@@ -233,22 +260,24 @@ const Home = () => {
   };
 
   const updateCardStatus = (updatedCard: Card) => {
-    setCards((current) =>
-      current.map((obj) => {
-        if (obj.id === updatedCard.id) {
-          return {
-            ...obj,
-            status: updatedCard.status,
-            updatedAt: updatedCard.updatedAt,
-          };
-        }
-        return obj;
-      })
+    setCards(
+      (current) =>
+        current &&
+        current.map((obj) => {
+          if (obj.id === updatedCard.id) {
+            return {
+              ...obj,
+              status: updatedCard.status,
+              updatedAt: updatedCard.updatedAt,
+            };
+          }
+          return obj;
+        })
     );
   };
 
   const setDeleteCard = (cardId: string) => {
-    if (cardId) {
+    if (cardId && cards) {
       const card = cards.find((obj) => obj.id === cardId);
       if (card) {
         setCardToDelete(card);
@@ -259,23 +288,24 @@ const Home = () => {
   };
 
   const setEditCard = (cardId: string) => {
-    if (cardId) {
+    if (cardId && cards) {
       const card = cards.find((obj) => obj.id === cardId);
       if (card) {
         setIsEdit(true);
         setCard(card);
         setOpenSheet(true);
-        // console.log(cards.find((obj) => obj.id === cardId));
       }
     }
   };
 
   const deleteCard = () => {
     if (cardToDelete) {
-      setCards((current) =>
-        current.filter((obj) => {
-          return obj.id !== cardToDelete.id;
-        })
+      setCards(
+        (current) =>
+          current &&
+          current.filter((obj) => {
+            return obj.id !== cardToDelete.id;
+          })
       );
     }
     waitDialog().then(() => setAlertOpen(false));
@@ -467,7 +497,7 @@ const Home = () => {
                                     createdAt: `${new Date()}`,
                                   });
                                 }}
-                                value={isEdit ? card.title : ""}
+                                value={card.title}
                               />
                             </div>
                           </div>
@@ -493,7 +523,7 @@ const Home = () => {
                                   description: e.target.value,
                                 })
                               }
-                              value={isEdit ? card.description : ""}
+                              value={card.description}
                             />
                           </div>
                         </div>

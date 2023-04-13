@@ -110,14 +110,14 @@ const TaskCard = ({
         </>
       )}
 
-      <div className="lg:flex flex-wrap block lg:gap-2 justify-between my-2">
-        <span className="flex my-1 justify-center whitespace-pre font-mono font-medium text-sm py-1 px-2 bg-transparent text-dark-500 dark:text-light-500 border border-dark-200 dark:border-light-600 rounded">
+      <div className="lg:flex flex-wrap block lg:gap-2 justify-center my-2">
+        <span className="flex mb-1 justify-center whitespace-pre font-mono font-medium text-sm py-1 px-2 bg-transparent text-dark-500 dark:text-light-500 border border-dark-200 dark:border-light-600 rounded">
           Created at:
           <span>
             {format(new Date(card.createdAt), "dd'/'M'/'yyyy, HH:mm")}
           </span>
         </span>
-        <span className="flex my-1 justify-center whitespace-pre font-mono font-medium text-sm py-1 px-2 bg-transparent text-dark-500 dark:text-light-500 border border-dark-200 dark:border-light-600 rounded">
+        <span className="flex mb-1 justify-center whitespace-pre font-mono font-medium text-sm py-1 px-2 bg-transparent text-dark-500 dark:text-light-500 border border-dark-200 dark:border-light-600 rounded">
           Updated at:
           <span>
             {card.updatedAt ? (

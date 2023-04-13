@@ -42,6 +42,7 @@ export type CardTaskProp = {
   card: Card;
   updateStatus: any;
   deleteCard: any;
+  editCard: any;
 };
 
 export type ProjectCardProp = {
