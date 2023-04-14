@@ -17,6 +17,7 @@ import { Status, ShowStatus } from "@/components/Status";
 import { Priority } from "@/components/Priority";
 import SelectProject from "@/components/SelectProject";
 import { Textarea } from "@/components/ui/textarea";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 import {
   Command,
@@ -138,6 +139,12 @@ const Home = () => {
   const [cardToDelete, setCardToDelete] = useState<Card | null>(null);
   const [cardToEdit, setCardToEdit] = useState<Card | null>(null);
 
+  const [backlog, setBacklog] = useState<Card[] | null>(null);
+  const [todo, setTodo] = useState<Card[] | null>(null);
+  const [inprogress, setInprogress] = useState<Card[] | null>(null);
+  const [canceled, setCanceled] = useState<Card[] | null>(null);
+  const [done, setDone] = useState<Card[] | null>(null);
+
   const [isEdit, setIsEdit] = useState(false);
   const [open, setOpen] = useState(false);
   const [openLabels, setOpenLabels] = useState(false);
@@ -246,6 +253,20 @@ const Home = () => {
   useEffect(() => {
     if (cards) {
       localStorage.setItem("cards", JSON.stringify(cards));
+
+      const findBacklog = cards.filter((card) => card.status === "backlog");
+      const findTodo = cards.filter((card) => card.status === "todo");
+      const findInprogress = cards.filter(
+        (card) => card.status === "in progress"
+      );
+      const findCanceled = cards.filter((card) => card.status === "canceled");
+      const findDone = cards.filter((card) => card.status === "done");
+
+      setBacklog(findBacklog);
+      setTodo(findTodo);
+      setInprogress(findInprogress);
+      setCanceled(findCanceled);
+      setDone(findDone);
     }
   }, [cards]);
 
@@ -335,7 +356,7 @@ const Home = () => {
             title={siteMetadata.title}
             description={siteMetadata.description}
           />
-          <section className="min-home-screen background-texture pb-10">
+          <section className="background-texture pb-10">
             <div className="container-fluid py-4">
               <div className="flex gap-2 mb-2">
                 <Dialog open={open} onOpenChange={setOpen}>
@@ -578,21 +599,27 @@ const Home = () => {
                   className="bg-transparent dark:bg-transparent border-0 px-1"
                 >
                   <>
-                    <section className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
-                      {cards && cards.length > 0 ? (
-                        cards.map((card: any) => (
-                          <TaskCard
-                            key={card.id}
-                            card={card}
-                            updateStatus={updateCardStatus}
-                            deleteCard={setDeleteCard}
-                            editCard={setEditCard}
-                          />
-                        ))
-                      ) : (
-                        <></>
-                      )}
-                    </section>
+                    {cards && cards.length > 0 ? (
+                      <section className="">
+                        <ScrollArea>
+                          <div className="flex gap-4 my-3 px-4 pb-4">
+                            {cards.map((card: any) => (
+                              <div key={card.id} className="w-[560px]">
+                                <TaskCard
+                                  card={card}
+                                  updateStatus={updateCardStatus}
+                                  deleteCard={setDeleteCard}
+                                  editCard={setEditCard}
+                                />
+                              </div>
+                            ))}
+                          </div>
+                          <ScrollBar orientation="horizontal" />
+                        </ScrollArea>
+                      </section>
+                    ) : (
+                      <></>
+                    )}
                   </>
                 </TabsContent>
                 <TabsContent
@@ -600,7 +627,139 @@ const Home = () => {
                   className="border-0 bg-transparent dark:bg-transparent px-1"
                 >
                   <>
-                    <section className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4"></section>
+                    <ScrollArea className="w-full h-[650px]">
+                      <div className="inline-flex gap-4">
+                        <section className="w-[560px] mb-5">
+                          <h2 className="bg-sky-500 text-light-500 text-3xl font-bold mb-4 rounded-md">
+                            <span className="marker-line">Backlog</span>
+                          </h2>
+                          <ScrollArea>
+                            <div className="p-4">
+                              <div className="flex flex-col gap-3">
+                                {backlog && backlog.length > 0 ? (
+                                  backlog.map((card: any) => (
+                                    <TaskCard
+                                      key={card.id}
+                                      card={card}
+                                      updateStatus={updateCardStatus}
+                                      deleteCard={setDeleteCard}
+                                      editCard={setEditCard}
+                                    />
+                                  ))
+                                ) : (
+                                  <>
+                                    <h1 className="text-5xl font-bold">
+                                      Nothing in the backlog
+                                    </h1>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                          </ScrollArea>
+                        </section>
+
+                        <section className="w-[560px] mb-5">
+                          <h2 className="bg-blue-700 text-light-500 text-3xl font-bold mb-4">
+                            <span className="marker-line">Todo</span>
+                          </h2>
+                          <div className="flex flex-col gap-4">
+                            {todo && todo.length > 0 ? (
+                              todo.map((card: any) => (
+                                <TaskCard
+                                  key={card.id}
+                                  card={card}
+                                  updateStatus={updateCardStatus}
+                                  deleteCard={setDeleteCard}
+                                  editCard={setEditCard}
+                                />
+                              ))
+                            ) : (
+                              <>
+                                <h1 className="text-5xl font-bold">
+                                  Nothing to do
+                                </h1>
+                              </>
+                            )}
+                          </div>
+                        </section>
+
+                        <section className="w-[560px] mb-5">
+                          <h2 className="bg-yellow-500 text-dark-500 text-3xl font-bold mb-4">
+                            <span className="marker-line">In Progress</span>
+                          </h2>
+                          <div className="flex flex-col gap-4">
+                            {inprogress && inprogress.length > 0 ? (
+                              inprogress.map((card: any) => (
+                                <TaskCard
+                                  key={card.id}
+                                  card={card}
+                                  updateStatus={updateCardStatus}
+                                  deleteCard={setDeleteCard}
+                                  editCard={setEditCard}
+                                />
+                              ))
+                            ) : (
+                              <>
+                                <h1 className="text-5xl font-bold">
+                                  Nothing in progress
+                                </h1>
+                              </>
+                            )}
+                          </div>
+                        </section>
+
+                        <section className="w-[560px] mb-5">
+                          <h2 className="bg-crimson-500 text-light-500 text-3xl font-bold mb-4">
+                            <span className="marker-line">Canceled</span>
+                          </h2>
+                          <div className="flex flex-col gap-4">
+                            {canceled && canceled.length > 0 ? (
+                              canceled.map((card: any) => (
+                                <TaskCard
+                                  key={card.id}
+                                  card={card}
+                                  updateStatus={updateCardStatus}
+                                  deleteCard={setDeleteCard}
+                                  editCard={setEditCard}
+                                />
+                              ))
+                            ) : (
+                              <>
+                                <h1 className="text-5xl font-bold">
+                                  Nothing canceled
+                                </h1>
+                              </>
+                            )}
+                          </div>
+                        </section>
+
+                        <section className="w-[560px] mb-5">
+                          <h2 className="bg-emerald-500 text-light-500 text-3xl font-bold mb-4">
+                            <span className="marker-line">Done</span>
+                          </h2>
+                          <div className="flex flex-col gap-4">
+                            {done && done.length > 0 ? (
+                              done.map((card: any) => (
+                                <TaskCard
+                                  key={card.id}
+                                  card={card}
+                                  updateStatus={updateCardStatus}
+                                  deleteCard={setDeleteCard}
+                                  editCard={setEditCard}
+                                />
+                              ))
+                            ) : (
+                              <>
+                                <h1 className="text-5xl font-bold my-5">
+                                  Nothing done
+                                </h1>
+                              </>
+                            )}
+                          </div>
+                        </section>
+                      </div>
+                      <ScrollBar orientation="horizontal" />
+                    </ScrollArea>
                   </>
                 </TabsContent>
                 <TabsContent value="create"></TabsContent>
