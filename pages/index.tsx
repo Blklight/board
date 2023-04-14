@@ -356,7 +356,7 @@ const Home = () => {
             title={siteMetadata.title}
             description={siteMetadata.description}
           />
-          <section className="background-texture pb-10">
+          <section className="">
             <div className="container-fluid py-4">
               <div className="flex gap-2 mb-2">
                 <Dialog open={open} onOpenChange={setOpen}>
@@ -596,23 +596,103 @@ const Home = () => {
                 </TabsList>
                 <TabsContent
                   value="projects"
-                  className="bg-transparent dark:bg-transparent border-0 px-1"
+                  className="bg-transparent dark:bg-transparent border-0 p-1"
                 >
                   <>
                     {cards && cards.length > 0 ? (
                       <section className="">
                         <ScrollArea>
-                          <div className="flex gap-4 my-3 px-4 pb-4">
-                            {cards.map((card: any) => (
-                              <div key={card.id} className="w-[560px]">
-                                <TaskCard
-                                  card={card}
-                                  updateStatus={updateCardStatus}
-                                  deleteCard={setDeleteCard}
-                                  editCard={setEditCard}
-                                />
-                              </div>
-                            ))}
+                          <div className="flex gap-4 my-3 px-4 pb-5">
+                            <div className="w-[600px]">
+                              <h2 className="bg-sky-500 text-light-500 text-3xl font-bold mb-4 rounded-lg">
+                                <span className="marker-line">Backlog</span>
+                              </h2>
+                              <ScrollArea className="w-full h-[600px]">
+                                <div className="flex flex-col gap-4 my-3 px-5 pb-4">
+                                  {cards.map((card: any) => (
+                                    <TaskCard
+                                      key={card.id}
+                                      card={card}
+                                      updateStatus={updateCardStatus}
+                                      deleteCard={setDeleteCard}
+                                      editCard={setEditCard}
+                                    />
+                                  ))}
+                                </div>
+                              </ScrollArea>
+                            </div>
+                            <div className="w-[600px]">
+                              <h2 className="bg-blue-700 text-light-500 text-3xl font-bold mb-4 rounded-lg">
+                                <span className="marker-line">Todo</span>
+                              </h2>
+                              <ScrollArea className="w-full h-[600px]">
+                                <div className="flex flex-col gap-4 my-3 px-4 pb-4">
+                                  {cards.map((card: any) => (
+                                    <TaskCard
+                                      key={card.id}
+                                      card={card}
+                                      updateStatus={updateCardStatus}
+                                      deleteCard={setDeleteCard}
+                                      editCard={setEditCard}
+                                    />
+                                  ))}
+                                </div>
+                              </ScrollArea>
+                            </div>
+                            <div className="w-[600px]">
+                              <h2 className="bg-yellow-500 text-dark-500 text-3xl font-bold mb-4 rounded-lg">
+                                <span className="marker-line">In Progress</span>
+                              </h2>
+                              <ScrollArea className="w-full h-[600px]">
+                                <div className="flex flex-col gap-4 my-3 px-4 pb-4">
+                                  {cards.map((card: any) => (
+                                    <TaskCard
+                                      key={card.id}
+                                      card={card}
+                                      updateStatus={updateCardStatus}
+                                      deleteCard={setDeleteCard}
+                                      editCard={setEditCard}
+                                    />
+                                  ))}
+                                </div>
+                              </ScrollArea>
+                            </div>
+                            <div className="w-[600px]">
+                              <h2 className="bg-crimson-500 text-light-500 text-3xl font-bold mb-4 rounded-lg">
+                                <span className="marker-line">Canceled</span>
+                              </h2>
+                              <ScrollArea className="w-full h-[600px]">
+                                <div className="flex flex-col gap-4 my-3 px-4 pb-4">
+                                  {cards.map((card: any) => (
+                                    <TaskCard
+                                      key={card.id}
+                                      card={card}
+                                      updateStatus={updateCardStatus}
+                                      deleteCard={setDeleteCard}
+                                      editCard={setEditCard}
+                                    />
+                                  ))}
+                                </div>
+                              </ScrollArea>
+                            </div>
+                            <div className="w-[600px]">
+                              <h2 className="bg-emerald-500 text-light-500 text-3xl font-bold mb-4 rounded-lg">
+                                <span className="marker-line">Done</span>
+                              </h2>
+                              <ScrollArea className="w-full h-[600px]">
+                                <div className="flex flex-col gap-4 my-3 px-4 pb-4">
+                                  {cards.map((card: any) => (
+                                    <TaskCard
+                                      key={card.id}
+                                      card={card}
+                                      updateStatus={updateCardStatus}
+                                      deleteCard={setDeleteCard}
+                                      editCard={setEditCard}
+                                    />
+                                  ))}
+                                </div>
+                              </ScrollArea>
+                            </div>
                           </div>
                           <ScrollBar orientation="horizontal" />
                         </ScrollArea>
