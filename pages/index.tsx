@@ -3,7 +3,6 @@ import { useToast } from "@/hooks/ui/use-toast";
 import { ProjectContext, CardContext } from "@/contexts/contexts";
 
 import { v4 as uuid } from "uuid";
-import { format } from "date-fns";
 import { useForm, Controller } from "react-hook-form";
 
 import { PageSEO } from "@/components/SEO";
@@ -49,7 +48,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -64,27 +62,12 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
 import { InfoCard, TaskCard } from "@/components/Cards";
 
 import { Card, Project } from "@/types/types";
-
-type InputCards = {
-  title: string;
-  description: string;
-  project_id: string;
-  status: string;
-  priority: string;
-  label: string;
-};
-
-interface HomeProp {
-  documents: Array<object>;
-  initialDisplayDocuments: any;
-  pagination: number;
-}
+import { ProjectCard } from "@/components/Cards";
 
 const Home = () => {
   const { toast } = useToast();
@@ -137,7 +120,9 @@ const Home = () => {
   const [projects, setProjects] = useState<Project[] | null>(null);
   const [cards, setCards] = useState<Card[] | null>(null);
   const [cardToDelete, setCardToDelete] = useState<Card | null>(null);
-  const [cardToEdit, setCardToEdit] = useState<Card | null>(null);
+  const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
+
+  const [filter, setFilter] = useState<string | "">("");
 
   const [backlog, setBacklog] = useState<Card[] | null>(null);
   const [todo, setTodo] = useState<Card[] | null>(null);
@@ -150,6 +135,7 @@ const Home = () => {
   const [openLabels, setOpenLabels] = useState(false);
   const [openSheet, setOpenSheet] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
+  const [alertProjectOpen, setAlertProjectOpen] = useState(false);
 
   const waitDialog = () => new Promise((resolve) => setTimeout(resolve, 100));
 
@@ -164,27 +150,51 @@ const Home = () => {
   const handleSubmitProject = (e: any) => {
     e.preventDefault();
     let isDone = false;
+    const alreadyExistsProject =
+      projects && projects.find((obj) => obj.name === project.name);
+
     if (project.name) {
-      if (
-        projects.find(
-          (object: any) =>
-            object.name.toLowerCase() === project.name.toLowerCase()
-        )
-      ) {
-        return toast({
-          description: "Already exists a project with this name!",
-        });
+      if (!isEdit) {
+        if (alreadyExistsProject) {
+          return toast({
+            description: "Already exists a project with this name!",
+          });
+        }
       }
-      setProjects([...projects, project]);
+
+      if (isEdit) {
+        setProjects(
+          (current) =>
+            current &&
+            current.map((obj) => {
+              if (obj.id === project.id) {
+                return {
+                  ...project,
+                  updatedAt: `${new Date()}`,
+                };
+              }
+              return obj;
+            })
+        );
+      } else {
+        if (projects !== null) {
+          setProjects([...projects, project]);
+        }
+      }
       isDone = true;
-      toast({
-        description: "Project created successfully!",
-      });
     }
 
     if (isDone) {
+      if (isEdit) {
+        setIsEdit(false);
+      }
       setProject(initialStateProject);
       waitDialog().then(() => setOpen(false));
+      return toast({
+        title: isEdit
+          ? "Project Updated Successfully!"
+          : "Project registered successfully!",
+      });
     }
   };
 
@@ -220,7 +230,9 @@ const Home = () => {
             })
         );
       } else {
-        setCards([...cards, card]);
+        if (cards !== null) {
+          setCards([...cards, card]);
+        }
       }
       isDone = true;
     }
@@ -303,7 +315,17 @@ const Home = () => {
       if (card) {
         setCardToDelete(card);
         setAlertOpen(true);
-        console.log(cards.find((obj) => obj.id === cardId));
+      }
+    }
+  };
+
+  const setDeleteProject = (projectId: string) => {
+    if (projectId && projects) {
+      const project = projects.find((obj) => obj.id === projectId);
+
+      if (project) {
+        setProjectToDelete(project);
+        setAlertOpen(true);
       }
     }
   };
@@ -315,6 +337,18 @@ const Home = () => {
         setIsEdit(true);
         setCard(card);
         setOpenSheet(true);
+      }
+    }
+  };
+
+  const setEditProject = (projectId: string) => {
+    if (projectId && projects) {
+      const project = projects.find((obj) => obj.id === projectId);
+
+      if (project) {
+        setIsEdit(true);
+        setProject(project);
+        setOpen(true);
       }
     }
   };
@@ -333,18 +367,40 @@ const Home = () => {
     setCardToDelete(null);
   };
 
-  const cancelDelete = () => {
-    waitDialog().then(() => setAlertOpen(false));
-    setCardToDelete(null);
+  const deleteProject = () => {
+    if (projectToDelete) {
+      setProjects(
+        (current) =>
+          current &&
+          current.filter((obj) => {
+            return obj.id !== projectToDelete.id;
+          })
+      );
+    }
+    waitDialog().then(() => setAlertProjectOpen(false));
+    setProjectToDelete(null);
   };
 
-  const DeleteItemView = ({ isCard }: { isCard: boolean }) => {
-    return isCard ? (
+  const cancelDelete = () => {
+    waitDialog().then(() => {
+      setAlertOpen(false);
+      setAlertProjectOpen(false);
+    });
+    setCardToDelete(null);
+    setProjectToDelete(null);
+  };
+
+  const DeleteItemView = () => {
+    return (
       <>
-        <InfoCard card={cardToDelete} />
+        {cardToDelete && (
+          <div className="py-4">
+            <InfoCard card={cardToDelete} />
+          </div>
+        )}
+
+        {projectToDelete && <ProjectCard project={projectToDelete} toDelete />}
       </>
-    ) : (
-      <> </>
     );
   };
 
@@ -356,7 +412,7 @@ const Home = () => {
             title={siteMetadata.title}
             description={siteMetadata.description}
           />
-          <section className="">
+          <section className="background-texture">
             <div className="container-fluid py-4">
               <div className="flex gap-2 mb-2">
                 <Dialog open={open} onOpenChange={setOpen}>
@@ -385,9 +441,12 @@ const Home = () => {
                               setProject({
                                 ...project,
                                 name: e.target.value,
-                                createdAt: `${new Date()}`,
+                                createdAt: isEdit
+                                  ? project.createdAt
+                                  : `${new Date()}`,
                               });
                             }}
+                            value={project.name}
                           />
                           <p className="text-sm text-slate-500">
                             Enter project name.
@@ -403,6 +462,7 @@ const Home = () => {
                             onChange={(e) => {
                               setProject({ ...project, logo: e.target.value });
                             }}
+                            value={project.logo}
                           />
                           <p className="text-sm text-slate-500">
                             It's optional. Only if you want.
@@ -420,6 +480,7 @@ const Home = () => {
                                 description: e.target.value,
                               });
                             }}
+                            value={project.description}
                           />
                         </div>
                         <div className="flex justify-end">
@@ -428,7 +489,7 @@ const Home = () => {
                             variant={"uv"}
                             disabled={handleDisable()}
                           >
-                            Create Project
+                            {isEdit ? "Update Project" : "Create Project"}
                           </Button>
                         </div>
                       </form>
@@ -515,7 +576,9 @@ const Home = () => {
                                   setCard({
                                     ...card,
                                     title: e.target.value,
-                                    createdAt: `${new Date()}`,
+                                    createdAt: isEdit
+                                      ? card.createdAt
+                                      : `${new Date()}`,
                                   });
                                 }}
                                 value={card.title}
@@ -570,7 +633,7 @@ const Home = () => {
                         Are you sure absolutely sure?
                       </AlertDialogTitle>
                       <AlertDialogDescription>
-                        <DeleteItemView isCard />
+                        <DeleteItemView />
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
@@ -583,19 +646,41 @@ const Home = () => {
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
+
+                <AlertDialog
+                  open={alertProjectOpen}
+                  onOpenChange={setAlertProjectOpen}
+                >
+                  {/* <AlertDialogTrigger>Open</AlertDialogTrigger> */}
+                  <AlertDialogContent className="dark:!dark-glass">
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Are you sure absolutely sure?
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        <DeleteItemView />
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel onClick={cancelDelete}>
+                        Cancel
+                      </AlertDialogCancel>
+                      <AlertDialogAction onClick={deleteProject}>
+                        Delete Project
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
 
-              <Tabs defaultValue="projects" className="w-full">
+              <Tabs defaultValue="cards" className="w-full">
                 <TabsList className="shadow-md">
-                  <TabsTrigger value="projects">Projects</TabsTrigger>
                   <TabsTrigger value="cards">Cards</TabsTrigger>
-                  <TabsTrigger value="create">
-                    Create projects/cards
-                  </TabsTrigger>
-                  <TabsTrigger value="teste">Debugger</TabsTrigger>
+                  <TabsTrigger value="projects">Projects</TabsTrigger>
+                  <TabsTrigger value="about">Create projects/cards</TabsTrigger>
                 </TabsList>
                 <TabsContent
-                  value="projects"
+                  value="cards"
                   className="bg-transparent dark:bg-transparent border-0 p-1"
                 >
                   <>
@@ -603,95 +688,119 @@ const Home = () => {
                       <section className="">
                         <ScrollArea>
                           <div className="flex gap-4 my-3 px-4 pb-5">
-                            <div className="w-[600px]">
+                            <div className="md:w-[600px] w-[460px]">
                               <h2 className="bg-sky-500 text-light-500 text-3xl font-bold mb-4 rounded-lg">
                                 <span className="marker-line">Backlog</span>
                               </h2>
-                              <ScrollArea className="w-full h-[600px]">
-                                <div className="flex flex-col gap-4 my-3 px-5 pb-4">
-                                  {cards.map((card: any) => (
-                                    <TaskCard
-                                      key={card.id}
-                                      card={card}
-                                      updateStatus={updateCardStatus}
-                                      deleteCard={setDeleteCard}
-                                      editCard={setEditCard}
-                                    />
-                                  ))}
-                                </div>
-                              </ScrollArea>
+                              {backlog && backlog.length > 0 ? (
+                                <ScrollArea className="w-full h-[560px]">
+                                  <div className="flex flex-col gap-4 my-3 px-5 pb-4">
+                                    {backlog.map((card: any) => (
+                                      <TaskCard
+                                        key={card.id}
+                                        card={card}
+                                        updateStatus={updateCardStatus}
+                                        deleteCard={setDeleteCard}
+                                        editCard={setEditCard}
+                                      />
+                                    ))}
+                                  </div>
+                                </ScrollArea>
+                              ) : (
+                                <></>
+                              )}
                             </div>
-                            <div className="w-[600px]">
+                            <div className="md:w-[600px] w-[460px]">
                               <h2 className="bg-blue-700 text-light-500 text-3xl font-bold mb-4 rounded-lg">
                                 <span className="marker-line">Todo</span>
                               </h2>
-                              <ScrollArea className="w-full h-[600px]">
-                                <div className="flex flex-col gap-4 my-3 px-4 pb-4">
-                                  {cards.map((card: any) => (
-                                    <TaskCard
-                                      key={card.id}
-                                      card={card}
-                                      updateStatus={updateCardStatus}
-                                      deleteCard={setDeleteCard}
-                                      editCard={setEditCard}
-                                    />
-                                  ))}
-                                </div>
-                              </ScrollArea>
+                              {todo && todo.length > 0 ? (
+                                <ScrollArea className="w-full h-[560px]">
+                                  <div className="flex flex-col gap-4 my-3 px-4 pb-4">
+                                    {todo.map((card: any) => (
+                                      <TaskCard
+                                        key={card.id}
+                                        card={card}
+                                        updateStatus={updateCardStatus}
+                                        deleteCard={setDeleteCard}
+                                        editCard={setEditCard}
+                                      />
+                                    ))}
+                                  </div>
+                                </ScrollArea>
+                              ) : (
+                                <></>
+                              )}
                             </div>
-                            <div className="w-[600px]">
+                            <div className="md:w-[600px] w-[460px]">
                               <h2 className="bg-yellow-500 text-dark-500 text-3xl font-bold mb-4 rounded-lg">
                                 <span className="marker-line">In Progress</span>
                               </h2>
-                              <ScrollArea className="w-full h-[600px]">
-                                <div className="flex flex-col gap-4 my-3 px-4 pb-4">
-                                  {cards.map((card: any) => (
-                                    <TaskCard
-                                      key={card.id}
-                                      card={card}
-                                      updateStatus={updateCardStatus}
-                                      deleteCard={setDeleteCard}
-                                      editCard={setEditCard}
-                                    />
-                                  ))}
-                                </div>
-                              </ScrollArea>
+                              {inprogress && inprogress.length > 0 ? (
+                                <ScrollArea className="w-full h-[560px]">
+                                  <div className="flex flex-col gap-4 my-3 px-4 pb-4">
+                                    {inprogress.map((card: any) => (
+                                      <TaskCard
+                                        key={card.id}
+                                        card={card}
+                                        updateStatus={updateCardStatus}
+                                        deleteCard={setDeleteCard}
+                                        editCard={setEditCard}
+                                      />
+                                    ))}
+                                  </div>
+                                </ScrollArea>
+                              ) : (
+                                <></>
+                              )}
                             </div>
-                            <div className="w-[600px]">
+                            <div className="md:w-[600px] w-[460px]">
                               <h2 className="bg-crimson-500 text-light-500 text-3xl font-bold mb-4 rounded-lg">
                                 <span className="marker-line">Canceled</span>
                               </h2>
-                              <ScrollArea className="w-full h-[600px]">
-                                <div className="flex flex-col gap-4 my-3 px-4 pb-4">
-                                  {cards.map((card: any) => (
-                                    <TaskCard
-                                      key={card.id}
-                                      card={card}
-                                      updateStatus={updateCardStatus}
-                                      deleteCard={setDeleteCard}
-                                      editCard={setEditCard}
-                                    />
-                                  ))}
-                                </div>
-                              </ScrollArea>
+                              {canceled && canceled.length > 0 ? (
+                                <ScrollArea className="w-full h-[560px]">
+                                  <div className="flex flex-col gap-4 my-3 px-4 pb-4">
+                                    {canceled.map((card: any) => (
+                                      <TaskCard
+                                        key={card.id}
+                                        card={card}
+                                        updateStatus={updateCardStatus}
+                                        deleteCard={setDeleteCard}
+                                        editCard={setEditCard}
+                                      />
+                                    ))}
+                                  </div>
+                                </ScrollArea>
+                              ) : (
+                                <></>
+                              )}
                             </div>
-                            <div className="w-[600px]">
+                            <div className="md:w-[600px] w-[460px]">
                               <h2 className="bg-emerald-500 text-light-500 text-3xl font-bold mb-4 rounded-lg">
                                 <span className="marker-line">Done</span>
                               </h2>
-                              <ScrollArea className="w-full h-[600px]">
-                                <div className="flex flex-col gap-4 my-3 px-4 pb-4">
-                                  {cards.map((card: any) => (
-                                    <TaskCard
-                                      key={card.id}
-                                      card={card}
-                                      updateStatus={updateCardStatus}
-                                      deleteCard={setDeleteCard}
-                                      editCard={setEditCard}
-                                    />
-                                  ))}
-                                </div>
-                              </ScrollArea>
+                              {done && done.length > 0 ? (
+                                <ScrollArea className="w-full h-[560px]">
+                                  <div className="flex flex-col gap-4 my-3 px-4 pb-4">
+                                    {done.map((card: any) => (
+                                      <TaskCard
+                                        key={card.id}
+                                        card={card}
+                                        updateStatus={updateCardStatus}
+                                        deleteCard={setDeleteCard}
+                                        editCard={setEditCard}
+                                      />
+                                    ))}
+                                  </div>
+                                </ScrollArea>
+                              ) : (
+                                <>
+                                  <h1 className="font-bold text-3xl text-center my-4">
+                                    Nothing here!
+                                  </h1>
+                                </>
+                              )}
                             </div>
                           </div>
                           <ScrollBar orientation="horizontal" />
@@ -703,147 +812,27 @@ const Home = () => {
                   </>
                 </TabsContent>
                 <TabsContent
-                  value="cards"
+                  value="projects"
                   className="border-0 bg-transparent dark:bg-transparent px-1"
                 >
                   <>
-                    <ScrollArea className="w-full h-[650px]">
-                      <div className="inline-flex gap-4">
-                        <section className="w-[560px] mb-5">
-                          <h2 className="bg-sky-500 text-light-500 text-3xl font-bold mb-4 rounded-md">
-                            <span className="marker-line">Backlog</span>
-                          </h2>
-                          <ScrollArea>
-                            <div className="p-4">
-                              <div className="flex flex-col gap-3">
-                                {backlog && backlog.length > 0 ? (
-                                  backlog.map((card: any) => (
-                                    <TaskCard
-                                      key={card.id}
-                                      card={card}
-                                      updateStatus={updateCardStatus}
-                                      deleteCard={setDeleteCard}
-                                      editCard={setEditCard}
-                                    />
-                                  ))
-                                ) : (
-                                  <>
-                                    <h1 className="text-5xl font-bold">
-                                      Nothing in the backlog
-                                    </h1>
-                                  </>
-                                )}
-                              </div>
-                            </div>
-                          </ScrollArea>
-                        </section>
-
-                        <section className="w-[560px] mb-5">
-                          <h2 className="bg-blue-700 text-light-500 text-3xl font-bold mb-4">
-                            <span className="marker-line">Todo</span>
-                          </h2>
-                          <div className="flex flex-col gap-4">
-                            {todo && todo.length > 0 ? (
-                              todo.map((card: any) => (
-                                <TaskCard
-                                  key={card.id}
-                                  card={card}
-                                  updateStatus={updateCardStatus}
-                                  deleteCard={setDeleteCard}
-                                  editCard={setEditCard}
-                                />
-                              ))
-                            ) : (
-                              <>
-                                <h1 className="text-5xl font-bold">
-                                  Nothing to do
-                                </h1>
-                              </>
-                            )}
-                          </div>
-                        </section>
-
-                        <section className="w-[560px] mb-5">
-                          <h2 className="bg-yellow-500 text-dark-500 text-3xl font-bold mb-4">
-                            <span className="marker-line">In Progress</span>
-                          </h2>
-                          <div className="flex flex-col gap-4">
-                            {inprogress && inprogress.length > 0 ? (
-                              inprogress.map((card: any) => (
-                                <TaskCard
-                                  key={card.id}
-                                  card={card}
-                                  updateStatus={updateCardStatus}
-                                  deleteCard={setDeleteCard}
-                                  editCard={setEditCard}
-                                />
-                              ))
-                            ) : (
-                              <>
-                                <h1 className="text-5xl font-bold">
-                                  Nothing in progress
-                                </h1>
-                              </>
-                            )}
-                          </div>
-                        </section>
-
-                        <section className="w-[560px] mb-5">
-                          <h2 className="bg-crimson-500 text-light-500 text-3xl font-bold mb-4">
-                            <span className="marker-line">Canceled</span>
-                          </h2>
-                          <div className="flex flex-col gap-4">
-                            {canceled && canceled.length > 0 ? (
-                              canceled.map((card: any) => (
-                                <TaskCard
-                                  key={card.id}
-                                  card={card}
-                                  updateStatus={updateCardStatus}
-                                  deleteCard={setDeleteCard}
-                                  editCard={setEditCard}
-                                />
-                              ))
-                            ) : (
-                              <>
-                                <h1 className="text-5xl font-bold">
-                                  Nothing canceled
-                                </h1>
-                              </>
-                            )}
-                          </div>
-                        </section>
-
-                        <section className="w-[560px] mb-5">
-                          <h2 className="bg-emerald-500 text-light-500 text-3xl font-bold mb-4">
-                            <span className="marker-line">Done</span>
-                          </h2>
-                          <div className="flex flex-col gap-4">
-                            {done && done.length > 0 ? (
-                              done.map((card: any) => (
-                                <TaskCard
-                                  key={card.id}
-                                  card={card}
-                                  updateStatus={updateCardStatus}
-                                  deleteCard={setDeleteCard}
-                                  editCard={setEditCard}
-                                />
-                              ))
-                            ) : (
-                              <>
-                                <h1 className="text-5xl font-bold my-5">
-                                  Nothing done
-                                </h1>
-                              </>
-                            )}
-                          </div>
-                        </section>
-                      </div>
-                      <ScrollBar orientation="horizontal" />
-                    </ScrollArea>
+                    {projects && projects.length > 0 ? (
+                      <section className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-3">
+                        {projects.map((project) => (
+                          <ProjectCard
+                            key={project.id}
+                            project={project}
+                            deleteProject={setDeleteProject}
+                            editProject={setEditProject}
+                          />
+                        ))}
+                      </section>
+                    ) : (
+                      <></>
+                    )}
                   </>
                 </TabsContent>
-                <TabsContent value="create"></TabsContent>
-                <TabsContent value="teste"></TabsContent>
+                <TabsContent value="about"></TabsContent>
               </Tabs>
             </div>
           </section>

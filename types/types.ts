@@ -47,4 +47,7 @@ export type CardTaskProp = {
 
 export type ProjectCardProp = {
   project: Project;
+  deleteProject?: any;
+  editProject?: any;
+  toDelete?: boolean;
 };

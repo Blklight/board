@@ -3,9 +3,6 @@ import { format } from "date-fns";
 import { useToast } from "@/hooks/ui/use-toast";
 
 import { Card, CardTaskProp, ProjectCardProp } from "@/types/types";
-
-import { Button } from "@/components/ui/button";
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,7 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { ShowProject } from "@/components/Projects";
-
+import { Button } from "@/components/ui/button";
 import { ShowStatus, StatusCardSelector } from "@/components/Status";
 import { ShowPriority } from "@/components/Priority";
 import { statuses } from "@/lib/data";
@@ -165,29 +162,76 @@ const TaskCard = ({
   );
 };
 
-const ProjectCard = ({ project }: ProjectCardProp): JSX.Element => {
+const ProjectCard = ({
+  project,
+  deleteProject,
+  editProject,
+  toDelete = false,
+}: ProjectCardProp): JSX.Element => {
   return project ? (
-    <article className="flex items-center relative p-5 rounded-lg bg-light-500 dark:bg-dark-500 border border-grey-300 dark:border-slate-700 shadow-md">
-      <div className="overflow-hidden w-40 h-40 rounded-full">
+    <article className="flex relative p-5 rounded-lg glass dark:dark-glass border !border-light-600 dark:!border-dark-700 shadow-md">
+      <div className="overflow-hidden w-20 h-20 rounded-full">
         <img
           src={project.logo ? project.logo : "/images/blklight-thumb.jpg"}
-          className="w-40 h-40 object-cover rounded-full transition-all hover:scale-105"
+          className="w-20 h-20 object-cover rounded-full transition-all hover:scale-105"
           alt=""
         />
       </div>
 
       <div className="ml-4 flex-1">
-        <h3 className="text-3xl font-bold">{project.name}</h3>
-        <p className="text-sm font-medium tracking-wide">
+        <h3 className="text-3xl font-bold text-dark-500 dark:text-light-500">
+          {project.name}
+        </h3>
+        <p className="text-sm font-medium tracking-wide text-dark-500 dark:text-light-500">
           Created at:
           <span>
             {format(new Date(project.createdAt), "dd'/'M'/'yyyy, HH:mm")}
           </span>
         </p>
+        {project.updatedAt && (
+          <p className="text-sm font-medium tracking-wide text-dark-500 dark:text-light-500">
+            Updated at:
+            <span>
+              {format(new Date(project.updatedAt), "dd'/'M'/'yyyy, HH:mm")}
+            </span>
+          </p>
+        )}
         {project.description && (
           <>
-            <p>{project.description}</p>
+            <p className="text-dark-500 dark:text-light-500">
+              {project.description}
+            </p>
           </>
+        )}
+        {!toDelete && (
+          <div className="flex mt-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant={"outline"} size={"sm"}>
+                  <MoreVertical className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className="glass dark:dark-glass !rounded-md"
+                align="start"
+              >
+                <DropdownMenuLabel>Options</DropdownMenuLabel>
+                <DropdownMenuSeparator className="bg-light-500 dark:bg-dark-500" />
+                <DropdownMenuItem
+                  className="rounded"
+                  onClick={() => editProject(project.id)}
+                >
+                  <Edit className="mr-2 w-4 h-4" /> Edit
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="rounded"
+                  onClick={() => deleteProject(project.id)}
+                >
+                  <Trash className="mr-2 w-4 h-4" /> Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         )}
       </div>
     </article>

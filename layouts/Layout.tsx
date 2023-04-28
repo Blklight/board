@@ -4,10 +4,6 @@ interface LayoutProps {
 
 import { useRouter } from "next/router";
 
-// import Barlow from "@/components/Fonts/Barlow";
-// import JetBrains from "@/components/Fonts/JetBrainsMono";
-// import IBMPlexSerif from "@/components/Fonts/IBMPlexSerif";
-
 import Footer from "@/components/Footer";
 import NavigationBar from "@/components/NavigationBar";
 
@@ -22,7 +18,7 @@ const Layout = ({ children }: LayoutProps) => {
           {/* <Sidebar /> */}
           <div className="flex flex-1 flex-col max-w-full min-home-screen">
             {children}
-            {router.route !== "/" && <Footer />}
+            <Footer />
           </div>
         </div>
       </div>
