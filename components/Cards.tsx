@@ -43,7 +43,7 @@ const TaskCard = ({
 
   return card ? (
     <article
-      className={`glass dark:dark-glass dark:text-light-500 border p-5 rounded-lg relative shadow-lg my-3 ${styling?.card}`}
+      className={`glass dark:dark-glass dark:text-light-500 border !border-b-[5px] p-5 rounded-lg relative shadow-lg my-2 ${styling?.card}`}
     >
       <button
         className="absolute -top-5 cursor-pointer"

@@ -404,6 +404,8 @@ const Home = () => {
     );
   };
 
+  console.log(cards);
+
   return (
     <>
       <ProjectContext.Provider value={{ projects, setProjects }}>
@@ -832,7 +834,32 @@ const Home = () => {
                     )}
                   </>
                 </TabsContent>
-                <TabsContent value="about"></TabsContent>
+                <TabsContent value="about">
+                  {cards && cards.length > 0 && (
+                    <div className="">
+                      <h2 className=" text-3xl font-bold mb-1">
+                        <span className="marker-line !py-1 !px-2 bg-sky-500 text-light-500">
+                          Backlog
+                        </span>
+                      </h2>
+                      <ScrollArea>
+                        <div className="flex gap-4 my-3 px-4 py-3 background-texture rounded-lg">
+                          {cards.map((card: any) => (
+                            <div key={card.id} className="w-[600px]">
+                              <TaskCard
+                                card={card}
+                                updateStatus={updateCardStatus}
+                                deleteCard={setDeleteCard}
+                                editCard={setEditCard}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                        <ScrollBar orientation="horizontal" />
+                      </ScrollArea>
+                    </div>
+                  )}
+                </TabsContent>
               </Tabs>
             </div>
           </section>
